@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.ModelClient;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import entities.Client;
