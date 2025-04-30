@@ -65,7 +65,7 @@ import entities.Client;
         modelClient.setClient(client);
         modelClient.ajouterClient();
 
-        response.sendRedirect("reussit.html?action=ajout");
+        response.sendRedirect("Client/reussit.html?action=ajout");
 	}
 
 	private void modifierClient(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -82,20 +82,20 @@ import entities.Client;
         modelClient.setClient(client);
         modelClient.modifierClient();
 
-        response.sendRedirect("reussit.html?action=modification");
+        response.sendRedirect("Client/reussit.html?action=modification");
 	}
 
 	private void supprimerClient(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		int codeClient = Integer.parseInt(request.getParameter("codeClient"));
         modelClient.supprimerClient(codeClient);
-        response.sendRedirect("reussit.html?action=suppression");
+        response.sendRedirect("Client/reussit.html?action=suppression");
 	}
 	
 
 	private void afficherListeClients(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    List<Client> clients = modelClient.listeClients();
 	    request.setAttribute("clients", clients);
-	    request.getRequestDispatcher("/listeClients.jsp").forward(request, response);
+	    request.getRequestDispatcher("Client/listeClients.jsp").forward(request, response);
 	}
 	
 

@@ -110,7 +110,7 @@
                 <i class="bi bi-people-fill"></i> Gestion des Clients
             </h1>
             <div class="action-buttons">
-                <a href="gestionClient.html" class="btn btn-primary">
+                <a href="Client/gestionClient.html" class="btn btn-primary">
                     <i class="bi bi-person-plus"></i> Ajouter un client
                 </a>
             </div>
@@ -151,7 +151,7 @@
                                     <td><%= client.getTel() %></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="modifierClient.jsp?id=<%= client.getCodeClient() %>" 
+                                            <a href="Client/modifierClient.jsp?id=<%= client.getCodeClient() %>" 
                                                class="btn btn-warning btn-sm">
                                                <i class="bi bi-pencil-square"></i> Modifier
                                             </a>
@@ -178,15 +178,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Ajouter un effet de confirmation amélioré pour la suppression
-        document.querySelectorAll('.btn-danger').forEach(button => {
-            button.addEventListener('click', function(e) {
-                if (!confirm('Cette action est irréversible. Confirmez-vous la suppression de ce client ?')) {
-                    e.preventDefault();
-                }
-            });
-        });
-    </script>
 </body>
 </html>
