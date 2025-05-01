@@ -1,24 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
 <%@ page import="entities.Voiture, model.ModelVoiture, model.ModelParc, entities.Parc" %>
 <%
-String idParam = request.getParameter("id");
-Voiture voiture = null;
-ModelParc modelParc = new ModelParc();
-
-if (idParam != null && !idParam.isEmpty()) { 
-    try {
-        int codeVoiture = Integer.parseInt(idParam);
-        ModelVoiture model = new ModelVoiture();
-        voiture = model.getVoitureById(codeVoiture);
-    } catch (NumberFormatException e) {
-    }
-}
-
-if (voiture == null) {
-    response.sendRedirect(request.getContextPath() + "/listeVoitures?error=voiture_not_found");
-    return;
-}
+Voiture voiture = (Voiture) request.getAttribute("voiture");
+List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
 %>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -77,7 +64,7 @@ if (voiture == null) {
             <h1 class="h3 text-primary">
                 <i class="bi bi-car-front"></i> Gestion des Voitures
             </h1>
-            <a href="listeVoitures" class="btn btn-primary">
+            <a href="/LocationDeVoitures/listeVoitures" class="btn btn-primary">
                 <i class="bi bi-list-ul"></i> Liste des voitures
             </a>
         </div>
@@ -88,9 +75,9 @@ if (voiture == null) {
                     <i class="bi bi-pencil-square"></i> Modifier la voiture
                 </h2>
             </div>
-            <div class="card-body">
-                <form id="modification" action="updateVoiture" method="post" class="row g-3">
-                    <input type="hidden" name="codeVoiture" value="<%= voiture.getCodeVoiture() %>">
+            <div class="card-body" style="padding:20px">
+                <form id="modification" action="/LocationDeVoitures/updateVoiture" method="post" class="row g-3">
+                    <input type="hidden" name="codevoiture" value="<%= voiture.getCodeVoiture() %>">
 
                     <div class="col-md-6">
                         <label for="matricule" class="form-label">Matricule :</label>
@@ -114,7 +101,7 @@ if (voiture == null) {
                         <label for="codeParc" class="form-label">Parc :</label>
                         <select name="codeParc" id="codeParc" class="form-control" required>
                             <%
-                            for (Parc parc : modelParc.getAllParcs()) {
+                            for (Parc parc : parcs) {
                                 boolean selected = voiture.getParc() != null && parc.getCodeParc() == voiture.getParc().getCodeParc();
                             %>
                             <option value="<%= parc.getCodeParc() %>" <%= selected ? "selected" : "" %>>
@@ -135,14 +122,5 @@ if (voiture == null) {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('modification').addEventListener('submit', function(e) {
-            const kilometrage = document.getElementById('kilometrage').value;
-            if (kilometrage < 0) {
-                alert("Le kilométrage ne peut pas être négatif.");
-                e.preventDefault();
-            }
-        });
-    </script>
 </body>
 </html>

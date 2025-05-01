@@ -1,23 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="entities.Client, model.ModelClient" %>
+<%@ page import="entities.Client" %>
 <%
-String idParam = request.getParameter("id");
-Client client = null;
-
-if (idParam != null && !idParam.isEmpty()) {
-    try {
-        int codeClient = Integer.parseInt(idParam);
-        ModelClient model = new ModelClient();
-        client = model.getClientById(codeClient);
-    } catch (NumberFormatException e) {
-    }
-}
-
-if (client == null) {
-    response.sendRedirect(request.getContextPath() + "/listeClients?error=client_not_found");
-    return;
-}
+Client client = (Client) request.getAttribute("client");
 %>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>

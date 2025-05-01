@@ -100,7 +100,7 @@
             <i class="bi bi-truck-front-fill"></i> Gestion des Voitures
         </h1>
         <div class="action-buttons">
-            <a href="ajoutVoiture.html" class="btn btn-primary">
+            <a href="/LocationDeVoitures/formAjoutVoiture" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Ajouter une voiture
             </a>
         </div>
@@ -122,7 +122,7 @@
                             <th>Modèle</th>
                             <th>Kilométrage</th>
                             <th>Code Parc</th>
-                            <th>Actions</th>
+                            <th style="text-align:center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -138,9 +138,10 @@
                             <td><%= v.getParc() != null ? v.getParc().getCodeParc() : "-" %></td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="modifierVoiture.jsp?id=<%= v.getCodeVoiture() %>" class="btn btn-warning btn-sm">
-                                        <i class="bi bi-pencil-square"></i> Modifier
-                                    </a>
+                                    <a href="/LocationDeVoitures/formModifierVoiture?id=<%= v.getCodeVoiture() %>" class="btn btn-warning btn-sm">
+									    <i class="bi bi-pencil-square"></i> Modifier
+									</a>
+
                                     <a href="deleteVoiture?codevoiture=<%= v.getCodeVoiture() %>" class="btn btn-danger btn-sm"
                                        onclick="return confirm('Confirmez-vous la suppression de cette voiture ?')">
                                         <i class="bi bi-trash"></i> Supprimer
@@ -166,14 +167,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.querySelectorAll('.btn-danger').forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (!confirm('Cette action est irréversible. Confirmez-vous la suppression de cette voiture ?')) {
-                e.preventDefault();
-            }
-        });
-    });
-</script>
 </body>
 </html>

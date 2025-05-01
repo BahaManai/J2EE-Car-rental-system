@@ -110,7 +110,7 @@
                 <i class="bi bi-people-fill"></i> Gestion des Clients
             </h1>
             <div class="action-buttons">
-                <a href="Client/gestionClient.html" class="btn btn-primary">
+                <a href="/LocationDeVoitures/formAjoutClient" class="btn btn-primary">
                     <i class="bi bi-person-plus"></i> Ajouter un client
                 </a>
             </div>
@@ -134,7 +134,7 @@
                                 <th>Prénom</th>
                                 <th>Email</th>
                                 <th>Téléphone</th>
-                                <th>Actions</th>
+                                <th style ="text-align:center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -151,7 +151,7 @@
                                     <td><%= client.getTel() %></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="Client/modifierClient.jsp?id=<%= client.getCodeClient() %>" 
+                                            <a href="/LocationDeVoitures/formModifierClient?id=<%= client.getCodeClient() %>" 
                                                class="btn btn-warning btn-sm">
                                                <i class="bi bi-pencil-square"></i> Modifier
                                             </a>

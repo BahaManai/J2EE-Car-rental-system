@@ -15,7 +15,7 @@ import entities.Client;
 /**
  * Servlet implementation class ServletClient
  */
-	@WebServlet(urlPatterns = {"/ajout", "/update", "/delete", "/listeClients"})
+	@WebServlet(urlPatterns = {"/ajout", "/update", "/delete", "/listeClients", "/formModifierClient", "/formAjoutClient"})
 	
 	public class ServletClient extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -48,7 +48,12 @@ import entities.Client;
 			case "/listeClients":
 				 afficherListeClients(request, response);
 				 break;
-			
+			case "/formAjoutClient":
+		        afficherFormAjoutClient(request, response);
+		        break;
+		    case "/formModifierClient":
+		        afficherFormModifierClient(request, response);
+		        break;
 		}
 	}
 
@@ -95,9 +100,35 @@ import entities.Client;
 	private void afficherListeClients(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    List<Client> clients = modelClient.listeClients();
 	    request.setAttribute("clients", clients);
-	    request.getRequestDispatcher("Client/listeClients.jsp").forward(request, response);
+	    request.setAttribute("page", "Client/listeClients.jsp");
+	    request.getRequestDispatcher("adminLayout.jsp").forward(request, response);
 	}
 	
+	private void afficherFormAjoutClient(HttpServletRequest request, HttpServletResponse response)
+	        throws ServletException, IOException {
+	    request.setAttribute("page", "Client/ajoutClient.jsp");
+	    request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
+	}
+
+	private void afficherFormModifierClient(HttpServletRequest request, HttpServletResponse response)
+	        throws ServletException, IOException {
+	    String idParam = request.getParameter("id");
+	    if (idParam != null && !idParam.isEmpty()) {
+	        try {
+	            int codeClient = Integer.parseInt(idParam);
+	            ModelClient model = new ModelClient();
+	            Client client = model.getClientById(codeClient);
+	            if (client != null) {
+	                request.setAttribute("client", client);
+	                request.setAttribute("page", "Client/modifierClient.jsp");
+	                request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
+	                return;
+	            }
+	        } catch (NumberFormatException e) {
+	        }
+	    }
+	    response.sendRedirect("listeClients?error=client_not_found");
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
