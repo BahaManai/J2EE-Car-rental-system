@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="container mt-3">
-    <a href="/LocationDeVoitures/listeParcs" class="btn btn-primary">Acceuil</a><br><br>
+    <a href="/LocationDeVoitures/admin/listeVoitures" class="btn btn-primary">Accueil</a><br><br>
 
     <h2 id="message"></h2>
 
@@ -17,15 +17,15 @@
             return urlParams.get(param);
         }
         window.onload = function() {
-        	const urlParams = new URLSearchParams(window.location.search);
+            const urlParams = new URLSearchParams(window.location.search);
             const action = urlParams.get("action");
             let message = "";
-            if (action === "ajout") {
-                message = "Parc ajouté avec succès !";
-            } else if (action === "modification") {
-                message = "Parc modifié avec succès !";
-            } else if (action === "suppression") {
-                message = "Parc supprimé avec succès !";
+            if (action === "ajoutVoiture") {
+                message = "Voiture ajoutée avec succès !";
+            } else if (action === "modificationVoiture") {
+                message = "Voiture modifiée avec succès !";
+            } else if (action === "suppressionVoiture") {
+                message = "Voiture supprimée avec succès !";
             } else {
                 message = "Action inconnue.";
             }

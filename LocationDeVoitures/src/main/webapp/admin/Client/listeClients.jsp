@@ -110,7 +110,7 @@
                 <i class="bi bi-people-fill"></i> Gestion des Clients
             </h1>
             <div class="action-buttons">
-                <a href="/LocationDeVoitures/formAjoutClient" class="btn btn-primary">
+                <a href="/LocationDeVoitures/admin/formAjoutClient" class="btn btn-primary">
                     <i class="bi bi-person-plus"></i> Ajouter un client
                 </a>
             </div>
@@ -134,7 +134,7 @@
                                 <th>Prénom</th>
                                 <th>Email</th>
                                 <th>Téléphone</th>
-                                <th style ="text-align:center">Actions</th>
+                                <th style="text-align:center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -151,11 +151,11 @@
                                     <td><%= client.getTel() %></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="/LocationDeVoitures/formModifierClient?id=<%= client.getCodeClient() %>" 
+                                            <a href="/LocationDeVoitures/admin/formModifierClient?id=<%= client.getCodeClient() %>" 
                                                class="btn btn-warning btn-sm">
                                                <i class="bi bi-pencil-square"></i> Modifier
                                             </a>
-                                            <a href="delete?codeClient=<%= client.getCodeClient() %>" 
+                                            <a href="/LocationDeVoitures/admin/deleteClient?codeClient=<%= client.getCodeClient() %>" 
                                                class="btn btn-danger btn-sm" 
                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce client?')">
                                                <i class="bi bi-trash"></i> Supprimer

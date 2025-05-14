@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, java.util.ArrayList, entities.Voiture" %>
+<%@ page import="java.util.List, java.util.ArrayList, entities.Parc" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Liste des Voitures | Administration Location Voitures</title>
+    <title>Liste des Parcs | Administration Location Voitures</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -39,10 +39,6 @@
         .table-responsive {
             border-radius: 8px;
             overflow: hidden;
-        }
-
-        .table {
-            margin-bottom: 0;
         }
 
         .table thead th {
@@ -97,11 +93,11 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 text-primary">
-            <i class="bi bi-truck-front-fill"></i> Gestion des Voitures
+            <i class="bi bi-buildings"></i> Gestion des Parcs
         </h1>
         <div class="action-buttons">
-            <a href="/LocationDeVoitures/formAjoutVoiture" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Ajouter une voiture
+            <a href="/LocationDeVoitures/admin/formAjoutParc" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Ajouter un parc
             </a>
         </div>
     </div>
@@ -109,7 +105,7 @@
     <div class="admin-card">
         <div class="card-header">
             <h2 class="h4 mb-0">
-                <i class="bi bi-list-ul"></i> Liste des voitures
+                <i class="bi bi-list-ul"></i> Liste des parcs
             </h2>
         </div>
 
@@ -118,32 +114,31 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Matricule</th>
-                            <th>Modèle</th>
-                            <th>Kilométrage</th>
-                            <th>Code Parc</th>
+                            <th>Code</th>
+                            <th>Nom</th>
+                            <th>Libellé</th>
+                            <th>Capacité</th>
                             <th style="text-align:center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <%
-                        List<Voiture> l = (ArrayList<Voiture>) request.getAttribute("voitures");
+                        List<Parc> l = (ArrayList<Parc>) request.getAttribute("parcs");
                         if (l != null) {
-                            for (Voiture v : l) {
+                            for (Parc p : l) {
                         %>
                         <tr>
-                            <td><%= v.getMatricule() %></td>
-                            <td><%= v.getModel() %></td>
-                            <td><%= v.getKilometrage() %> km</td>
-                            <td><%= v.getParc() != null ? v.getParc().getCodeParc() : "-" %></td>
+                            <td><%= p.getCodeParc() %></td>
+                            <td><%= p.getNomParc() %></td>
+                            <td><%= p.getLibelle() %></td>
+                            <td><%= p.getCapacite() %></td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="/LocationDeVoitures/formModifierVoiture?id=<%= v.getCodeVoiture() %>" class="btn btn-warning btn-sm">
-									    <i class="bi bi-pencil-square"></i> Modifier
-									</a>
-
-                                    <a href="deleteVoiture?codevoiture=<%= v.getCodeVoiture() %>" class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Confirmez-vous la suppression de cette voiture ?')">
+                                    <a href="/LocationDeVoitures/admin/formModifierParc?id=<%= p.getCodeParc() %>" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil-square"></i> Modifier
+                                    </a>
+                                    <a href="/LocationDeVoitures/admin/deleteParc?codeParc=<%= p.getCodeParc() %>" class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Confirmez-vous la suppression de ce parc ?')">
                                         <i class="bi bi-trash"></i> Supprimer
                                     </a>
                                 </div>
@@ -159,7 +154,7 @@
 
             <% if (l == null || l.isEmpty()) { %>
                 <div class="alert alert-info mt-3">
-                    <i class="bi bi-info-circle"></i> Aucune voiture trouvée.
+                    <i class="bi bi-info-circle"></i> Aucun parc trouvé.
                 </div>
             <% } %>
         </div>

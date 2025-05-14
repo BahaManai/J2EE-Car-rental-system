@@ -1,15 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="entities.Parc" %>
-<%
-Parc parc = (Parc) request.getAttribute("parc");
-%>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Modifier Parc | Administration Location Voitures</title>
+    <title>Ajouter un Parc | Administration Location Voitures</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -98,7 +93,7 @@ Parc parc = (Parc) request.getAttribute("parc");
                 <i class="bi bi-buildings"></i> Gestion des Parcs
             </h1>
             <div class="action-buttons">
-                <a href="/LocationDeVoitures/listeParcs" class="btn btn-primary">
+                <a href="/LocationDeVoitures/admin/listeParcs" class="btn btn-primary">
                     <i class="bi bi-list-ul"></i> Liste des parcs
                 </a>
             </div>
@@ -108,35 +103,30 @@ Parc parc = (Parc) request.getAttribute("parc");
         <div class="admin-card">
             <div class="card-header">
                 <h2 class="h4 mb-0">
-                    <i class="bi bi-pencil-square"></i> Modifier le parc
+                    <i class="bi bi-plus-square"></i> Ajouter un nouveau parc
                 </h2>
             </div>
 
             <div class="card-body" style="padding:20px">
-                <form id="modification" action="/LocationDeVoitures/updateParc" method="post" class="row g-3">
-                    <input type="hidden" name="codeParc" value="<%= parc.getCodeParc() %>">
-
+                <form id="ajout" action="/LocationDeVoitures/admin/ajoutParc" method="post" class="row g-3">
                     <div class="col-md-6">
                         <label for="nomParc" class="form-label">Nom du parc :</label>
-                        <input type="text" id="nomParc" name="nomParc" class="form-control"
-                               value="<%= parc.getNomParc() %>" required placeholder="Nom du parc">
+                        <input type="text" id="nomParc" name="nomParc" class="form-control" required placeholder="Nom du parc">
                     </div>
 
                     <div class="col-md-6">
                         <label for="capacite" class="form-label">Capacité :</label>
-                        <input type="number" id="capacite" name="capacite" class="form-control"
-                               value="<%= parc.getCapacite() %>" required min="1" placeholder="Capacité">
+                        <input type="number" id="capacite" name="capacite" class="form-control" required min="1" placeholder="Capacité maximale">
                     </div>
 
                     <div class="col-12">
                         <label for="libelle" class="form-label">Libellé :</label>
-                        <input type="text" id="libelle" name="libelle" class="form-control"
-                               value="<%= parc.getLibelle() %>" required placeholder="Description du parc">
+                        <input type="text" id="libelle" name="libelle" class="form-control" required placeholder="Description du parc">
                     </div>
 
                     <div class="col-12 mt-4">
                         <button type="submit" class="btn btn-success px-4 py-2">
-                            <i class="bi bi-save"></i> Enregistrer les modifications
+                            <i class="bi bi-save"></i> Enregistrer le parc
                         </button>
                     </div>
                 </form>
@@ -146,7 +136,7 @@ Parc parc = (Parc) request.getAttribute("parc");
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('modification').addEventListener('submit', function(e) {
+        document.getElementById('ajout').addEventListener('submit', function(e) {
             const capacite = document.getElementById('capacite').value;
             if (capacite <= 0) {
                 alert("La capacité doit être un nombre positif.");

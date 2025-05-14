@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="container mt-3">
-    <a href="/LocationDeVoitures/listeVoitures" class="btn btn-primary">Acceuil</a><br><br>
+    <a href="/LocationDeVoitures/admin/listeLocations" class="btn btn-primary">Accueil</a><br><br>
 
     <h2 id="message"></h2>
 
@@ -17,15 +17,15 @@
             return urlParams.get(param);
         }
         window.onload = function() {
-        	const urlParams = new URLSearchParams(window.location.search);
+            const urlParams = new URLSearchParams(window.location.search);
             const action = urlParams.get("action");
             let message = "";
-            if (action === "ajoutVoiture") {
-                message = "Voiture ajoutée avec succès !";
-            } else if (action === "modificationVoiture") {
-                message = "Voiture modifiée avec succès !";
-            } else if (action === "suppressionVoiture") {
-                message = "Voiture supprimée avec succès !";
+            if (action === "ajoutLocation") {
+                message = "Location ajoutée avec succès !";
+            } else if (action === "modificationLocation") {
+                message = "Location modifiée avec succès !";
+            } else if (action === "suppressionLocation") {
+                message = "Location supprimée avec succès !";
             } else {
                 message = "Action inconnue.";
             }

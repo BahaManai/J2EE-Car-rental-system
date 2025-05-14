@@ -79,13 +79,13 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
 </head>
 <body>
     <div class="container py-5">
-        <!-- En-tÃªte -->
+        <!-- En-tête -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 text-primary">
                 <i class="bi bi-truck-front-fill"></i> Gestion des Voitures
             </h1>
             <div class="action-buttons">
-                <a href="/LocationDeVoitures/listeVoitures" class="btn btn-primary">
+                <a href="/LocationDeVoitures/admin/listeVoitures" class="btn btn-primary">
                     <i class="bi bi-list-ul"></i> Liste des voitures
                 </a>
             </div>
@@ -99,7 +99,7 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
                 </h2>
             </div>
             <div class="card-body" style="padding:20px">
-                <form id="ajoutVoiture" action="/LocationDeVoitures/ajoutVoiture" method="post" class="row g-3">
+                <form id="ajoutVoiture" action="/LocationDeVoitures/admin/ajoutVoiture" method="post" class="row g-3">
                     <div class="col-md-6">
                         <label for="matricule" class="form-label">Matricule :</label>
                         <input type="text" id="matricule" name="matricule" class="form-control" required placeholder="Matricule">
@@ -118,11 +118,11 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
                     <div class="col-md-6">
                         <label for="code_parc" class="form-label">Parc :</label>
                         <select id="code_parc" name="code_parc" class="form-control" required>
-						    <option value="">-- Sélectionnez un parc --</option>
-						    <% for (Parc parc : parcs) { %>
-						        <option value="<%= parc.getCodeParc() %>"><%= parc.getNomParc() %></option>
-						    <% } %>
-						</select>
+                            <option value="">-- Sélectionnez un parc --</option>
+                            <% for (Parc parc : parcs) { %>
+                                <option value="<%= parc.getCodeParc() %>"><%= parc.getNomParc() %></option>
+                            <% } %>
+                        </select>
                     </div>
 
                     <div class="col-12 mt-4">
@@ -140,7 +140,7 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
         document.getElementById('ajoutVoiture').addEventListener('submit', function(e) {
             const kilometrage = document.getElementById('kilometrage').value;
             if (kilometrage < 0) {
-                alert('Le kilomÃ©trage ne peut pas Ãªtre nÃ©gatif');
+                alert('Le kilométrage ne peut pas être négatif');
                 e.preventDefault();
             }
         });

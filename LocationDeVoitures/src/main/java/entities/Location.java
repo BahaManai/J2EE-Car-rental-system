@@ -1,18 +1,27 @@
 package entities;
 import java.util.Date;
 public class Location {
+	private int codeLocation;
 	private Voiture voiture;
 	private Client client;
 	private Date dateDeb;
 	private Date dateFin;
 	public Location() {}
-	public Location(Voiture voiture, Client client, Date dateDeb, Date dateFin) {
+	public Location(int codeLocation, Voiture voiture, Client client, Date dateDeb, Date dateFin) {
 		super();
+		this.codeLocation = codeLocation;
 		this.voiture = voiture;
 		this.client = client;
 		this.dateDeb = dateDeb;
 		this.dateFin = dateFin;
 	}
+	public int getCodeLocation() {
+		return codeLocation;
+	}
+	public void setCodeLocation(int codeClient) {
+		this.codeLocation = codeClient;
+	}
+	
 	public Voiture getVoiture() {
 		return voiture;
 	}

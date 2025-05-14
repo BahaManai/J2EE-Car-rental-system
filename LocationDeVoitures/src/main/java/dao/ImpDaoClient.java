@@ -170,5 +170,26 @@ public class ImpDaoClient implements IDaoClient {
         }
         return clients;
     }
-
+    public Client findByEmailAndPassword(String email, String motDePasse) {
+        String sql = "SELECT * FROM client WHERE email = ? AND mot_de_passe = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, motDePasse);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Client c = new Client();
+                c.setCodeClient(rs.getInt("code_client"));
+                c.setNom(rs.getString("nom"));
+                c.setPrenom(rs.getString("prenom"));
+                c.setCIN(rs.getString("CIN"));
+                c.setEmail(rs.getString("email"));
+                c.setMotDePasse(rs.getString("mot_de_passe"));
+                c.setRole(rs.getString("role"));
+                return c;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

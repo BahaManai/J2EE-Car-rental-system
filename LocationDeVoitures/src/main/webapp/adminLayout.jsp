@@ -1,11 +1,14 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <%@ page import="java.util.*" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.*, entities.Client" %>
 <%
     String pageToInclude = (String) request.getAttribute("page");
     if (pageToInclude == null) {
         pageToInclude = "/Client/gestionClient.html";
     }
+    // Get the logged-in user from session
+    Client user = (Client) session.getAttribute("user");
+    String userName = user != null ? user.getPrenom() + " " + user.getNom() : "Utilisateur";
+    String role = (String) session.getAttribute("role");
 %>
 <!DOCTYPE html>
 <html lang="fr">
@@ -13,8 +16,8 @@
     <meta charset="UTF-8">
     <title>Admin - Location de Voitures</title>
     <script src="https://cdn.tailwindcss.com"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">    
-	<style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">    
+    <style>
         .sidebar {
             transition: all 0.3s ease;
         }
@@ -38,12 +41,23 @@
             background-color: #3b82f6 !important;
         }
         .sidebar a {
-		    text-decoration: none;
-		    color: white;
-		}
-		.sidebar a:hover {
-		    text-decoration: none;
-		}
+            text-decoration: none;
+            color: white;
+        }
+        .sidebar a:hover {
+            text-decoration: none;
+        }
+        .user-icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -64,15 +78,29 @@
             <!-- Menu de navigation -->
             <nav class="flex-1 overflow-y-auto py-4">
                 <div class="space-y-2 px-4">
+                    <%
+                        String activeSection = "";
+                        if (pageToInclude.contains("Voiture")) {
+                            activeSection = "voitures";
+                        } else if (pageToInclude.contains("Client")) {
+                            activeSection = "clients";
+                        } else if (pageToInclude.contains("Parc")) {
+                            activeSection = "parcs";
+                        } else if (pageToInclude.contains("Location")) {
+                            activeSection = "locations";
+                        } else {
+                            activeSection = "dashboard";
+                        }
+                    %>
                     <!-- Dashboard -->
-                    <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 active-nav">
+                    <a href="/LocationDeVoitures/admin/dashboard" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700 <%= activeSection.equals("dashboard") ? "active-nav" : "" %>">
                         <i class="fas fa-tachometer-alt text-lg"></i>
                         <span class="nav-text">Tableau de bord</span>
                     </a>
                     
                     <!-- Gestion des voitures -->
                     <div class="group">
-                        <a href="#" class="nav-item flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-700">
+                        <a href="#" class="nav-item flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-700 <%= activeSection.equals("voitures") ? "active-nav" : "" %>">
                             <div class="flex items-center space-x-3">
                                 <i class="fas fa-car text-lg"></i>
                                 <span class="nav-text">Gestion des voitures</span>
@@ -80,30 +108,29 @@
                             <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
                         </a>
                         <div class="pl-11 mt-1 hidden group-hover:block">
-                            <a href="/LocationDeVoitures/listeVoitures" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Liste des voitures</a>
-                            <a href="/LocationDeVoitures/formAjoutVoiture" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Ajouter une voiture</a>
+                            <a href="/LocationDeVoitures/admin/listeVoitures" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Liste des voitures</a>
+                            <a href="/LocationDeVoitures/admin/formAjoutVoiture" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Ajouter une voiture</a>
                         </div>
                     </div>
                     
                     <!-- Gestion des clients -->
                     <div class="group">
-                        <a href="#" class="nav-item flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-700">
+                        <a href="#" class="nav-item flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-700 <%= activeSection.equals("clients") ? "active-nav" : "" %>">
                             <div class="flex items-center space-x-3">
-                                <i class="fas fa-car text-lg"></i>
+                                <i class="fas fa-user text-lg"></i>
                                 <span class="nav-text">Gestion des clients</span>
                             </div>
                             <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
                         </a>
                         <div class="pl-11 mt-1 hidden group-hover:block">
-                            <a href="/LocationDeVoitures/listeClients" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Liste des clients</a>
-                            <a href="/LocationDeVoitures/formAjoutClient" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Ajouter un client</a>
+                            <a href="/LocationDeVoitures/admin/listeClients" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Liste des clients</a>
+                            <a href="/LocationDeVoitures/admin/formAjoutClient" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Ajouter un client</a>
                         </div>
                     </div>
                     
-                    
                     <!-- Gestion des parcs -->
                     <div class="group">
-                        <a href="#" class="nav-item flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-700">
+                        <a href="#" class="nav-item flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-700 <%= activeSection.equals("parcs") ? "active-nav" : "" %>">
                             <div class="flex items-center space-x-3">
                                 <i class="fas fa-warehouse text-lg"></i>
                                 <span class="nav-text">Gestion des parcs</span>
@@ -111,56 +138,47 @@
                             <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
                         </a>
                         <div class="pl-11 mt-1 hidden group-hover:block">
-                            <a href="/LocationDeVoitures/listeParcs" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Liste des parcs</a>
-                            <a href="/LocationDeVoitures/formAjoutParc" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Ajouter un parc</a>
+                            <a href="/LocationDeVoitures/admin/listeParcs" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Liste des parcs</a>
+                            <a href="/LocationDeVoitures/admin/formAjoutParc" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Ajouter un parc</a>
                         </div>
                     </div>
-                    <!-- Réservations 
-                    <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700">
-                        <i class="fas fa-calendar-check text-lg"></i>
-                        <span class="nav-text">Réservations</span>
-                    </a>
-                    -->
-                    <!-- Statistiques 
-                    <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-700">
-                        <i class="fas fa-chart-line text-lg"></i>
-                        <span class="nav-text">Statistiques</span>
-                    </a>
-                    -->
+                    
+                    <!-- Gestion des locations -->
+                    <div class="group">
+                        <a href="#" class="nav-item flex items-center justify-between space-x-3 p-3 rounded-lg hover:bg-gray-700 <%= activeSection.equals("locations") ? "active-nav" : "" %>">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-calendar-check text-lg"></i>
+                                <span class="nav-text">Gestion des locations</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+                        </a>
+                        <div class="pl-11 mt-1 hidden group-hover:block">
+                            <a href="/LocationDeVoitures/admin/listeLocations" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Liste des locations</a>
+                            <a href="/LocationDeVoitures/admin/formAjoutLocation" class="block py-2 px-3 text-sm rounded hover:bg-gray-700">Ajouter une location</a>
+                        </div>
+                    </div>
                 </div>
             </nav>
             
-            <!-- Profil admin 
+            <!-- Profil utilisateur -->
             <div class="p-4 border-t border-gray-700">
                 <div class="flex items-center space-x-3">
-                    <img src="https://randomuser.me/api/portraits/men/33.jpg" alt="Admin" class="w-10 h-10 rounded-full">
-                    <div>
-                        <div class="font-medium">Admin</div>
-                        <div class="text-xs text-gray-400">Administrateur</div>
+                    <div class="user-icon-circle">
+                        <i class="fas <%= "admin".equals(role) ? "fa-user-tie" : "fa-user" %>"></i>
                     </div>
-                    <button class="ml-auto text-gray-400 hover:text-white">
+                    <div>
+                        <div class="font-medium"><%= userName %></div>
+                        <div class="text-xs text-gray-400"><%= role != null ? role.substring(0, 1).toUpperCase() + role.substring(1) : "Inconnu" %></div>
+                    </div>
+                    <a href="<%= request.getContextPath() %>/logout" class="ml-auto text-gray-400 hover:text-white">
                         <i class="fas fa-sign-out-alt"></i>
-                    </button>
+                    </a>
                 </div>
             </div>
-            -->
         </div>
 
         <!-- Contenu principal -->
         <div class="flex-1 overflow-auto">
-            <!-- HEADER
-            <header class="bg-white shadow-sm">
-                <div class="flex items-center justify-between p-4">
-                    <div class="flex items-center space-x-4">
-                        <h1 class="text-xl font-semibold text-gray-800">Tableau de bord</h1>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        
-                    </div>
-                </div>
-            </header>
- 			-->
-            <!-- Injection de contenu -->
             <main class="p-6">
                 <jsp:include page="<%= pageToInclude %>" />
             </main>
@@ -174,9 +192,11 @@
 
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
-            item.addEventListener('click', function() {
-                navItems.forEach(i => i.classList.remove('active-nav'));
-                this.classList.add('active-nav');
+            item.addEventListener('click', function(e) {
+                if (e.target.closest('.nav-item') && !e.target.closest('.pl-11')) {
+                    navItems.forEach(i => i.classList.remove('active-nav'));
+                    this.classList.add('active-nav');
+                }
             });
         });
     </script>

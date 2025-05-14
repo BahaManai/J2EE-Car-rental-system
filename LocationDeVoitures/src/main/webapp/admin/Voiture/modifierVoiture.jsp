@@ -64,7 +64,7 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
             <h1 class="h3 text-primary">
                 <i class="bi bi-car-front"></i> Gestion des Voitures
             </h1>
-            <a href="/LocationDeVoitures/listeVoitures" class="btn btn-primary">
+            <a href="/LocationDeVoitures/admin/listeVoitures" class="btn btn-primary">
                 <i class="bi bi-list-ul"></i> Liste des voitures
             </a>
         </div>
@@ -76,7 +76,7 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
                 </h2>
             </div>
             <div class="card-body" style="padding:20px">
-                <form id="modification" action="/LocationDeVoitures/updateVoiture" method="post" class="row g-3">
+                <form id="modification" action="/LocationDeVoitures/admin/updateVoiture" method="post" class="row g-3">
                     <input type="hidden" name="codevoiture" value="<%= voiture.getCodeVoiture() %>">
 
                     <div class="col-md-6">

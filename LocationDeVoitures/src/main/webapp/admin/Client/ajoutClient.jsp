@@ -1,15 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="entities.Client" %>
-<%
-Client client = (Client) request.getAttribute("client");
-%>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Modifier Client | Administration Location Voitures</title>
+    <title>Gestion des Clients | Administration Location Voitures</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -98,7 +93,7 @@ Client client = (Client) request.getAttribute("client");
                 <i class="bi bi-people-fill"></i> Gestion des Clients
             </h1>
             <div class="action-buttons">
-                <a href="/LocationDeVoitures/listeClients" class="btn btn-primary">
+                <a href="/LocationDeVoitures/admin/listeClients" class="btn btn-primary">
                     <i class="bi bi-list-ul"></i> Liste des clients
                 </a>
             </div>
@@ -108,60 +103,51 @@ Client client = (Client) request.getAttribute("client");
         <div class="admin-card">
             <div class="card-header">
                 <h2 class="h4 mb-0">
-                    <i class="bi bi-person-gear"></i> Modifier le client
+                    <i class="bi bi-person-plus"></i> Ajouter un nouveau client
                 </h2>
             </div>
             
             <div class="card-body" style="padding:20px">
-                <!-- Formulaire de modification -->
-                <form id="modification" action="/LocationDeVoitures/update" method="post" class="row g-3">
-                    <input type="hidden" name="codeClient" value="<%= client.getCodeClient() %>">
-                    
+                <!-- Formulaire d'ajout -->
+                <form id="ajout" action="/LocationDeVoitures/admin/ajoutClient" method="post" class="row g-3">
                     <div class="col-md-6">
                         <label for="CIN" class="form-label">CIN :</label>
-                        <input readonly type="text" id="CIN" name="CIN" class="form-control" 
-                               value="<%= client.getCIN() %>" required placeholder="CIN">
+                        <input type="text" id="CIN" name="CIN" class="form-control" required placeholder="CIN">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="nom" class="form-label">Nom :</label>
-                        <input type="text" id="nom" name="nom" class="form-control" 
-                               value="<%= client.getNom() %>" required placeholder="Nom">
+                        <input type="text" id="nom" name="nom" class="form-control" required placeholder="Nom">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="prenom" class="form-label">Prénom :</label>
-                        <input type="text" id="prenom" name="prenom" class="form-control" 
-                               value="<%= client.getPrenom() %>" required placeholder="Prénom">
+                        <input type="text" id="prenom" name="prenom" class="form-control" required placeholder="Prénom">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email :</label>
-                        <input type="email" id="email" name="email" class="form-control" 
-                               value="<%= client.getEmail() %>" required placeholder="yourname@example.com">
+                        <input type="email" id="email" name="email" class="form-control" required placeholder="yourname@example.com">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="tel" class="form-label">Téléphone :</label>
-                        <input type="tel" id="tel" name="tel" class="form-control" 
-                               value="<%= client.getTel() %>" required placeholder="Téléphone">
+                        <input type="tel" id="tel" name="tel" class="form-control" required placeholder="Téléphone">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="age" class="form-label">Âge :</label>
-                        <input type="number" id="age" name="age" class="form-control" 
-                               value="<%= client.getAge() %>" required min="18" max="99" placeholder="Age">
+                        <input type="number" id="age" name="age" class="form-control" required min="18" max="99" placeholder="Age">
                     </div>
                     
                     <div class="col-12">
                         <label for="adresse" class="form-label">Adresse :</label>
-                        <input type="text" id="adresse" name="adresse" class="form-control" 
-                               value="<%= client.getAdresse() %>" required placeholder="Adresse">
+                        <input type="text" id="adresse" name="adresse" class="form-control" required placeholder="Adresse">
                     </div>
                     
                     <div class="col-12 mt-4">
                         <button type="submit" class="btn btn-success px-4 py-2">
-                            <i class="bi bi-save"></i> Enregistrer les modifications
+                            <i class="bi bi-save"></i> Enregistrer le client
                         </button>
                     </div>
                 </form>
@@ -171,7 +157,7 @@ Client client = (Client) request.getAttribute("client");
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('modification').addEventListener('submit', function(e) {
+        document.getElementById('ajout').addEventListener('submit', function(e) {
             const tel = document.getElementById('tel').value;
             const age = document.getElementById('age').value;
             
@@ -186,6 +172,7 @@ Client client = (Client) request.getAttribute("client");
                 e.preventDefault();
                 return;
             }
+          
         });
     </script>
 </body>

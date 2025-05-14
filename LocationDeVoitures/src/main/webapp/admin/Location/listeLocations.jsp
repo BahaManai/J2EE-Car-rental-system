@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, java.util.ArrayList, entities.Parc" %>
+<%@ page import="java.util.List, java.util.ArrayList, entities.Location, java.text.SimpleDateFormat" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Liste des Parcs | Administration Location Voitures</title>
+    <title>Liste des Locations | Administration Location Voitures</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -39,6 +39,10 @@
         .table-responsive {
             border-radius: 8px;
             overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
         }
 
         .table thead th {
@@ -93,11 +97,11 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 text-primary">
-            <i class="bi bi-buildings"></i> Gestion des Parcs
+            <i class="bi bi-calendar-check"></i> Gestion des Locations
         </h1>
         <div class="action-buttons">
-            <a href="/LocationDeVoitures/formAjoutParc" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Ajouter un parc
+            <a href="/LocationDeVoitures/admin/formAjoutLocation" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Ajouter une location
             </a>
         </div>
     </div>
@@ -105,7 +109,7 @@
     <div class="admin-card">
         <div class="card-header">
             <h2 class="h4 mb-0">
-                <i class="bi bi-list-ul"></i> Liste des parcs
+                <i class="bi bi-list-ul"></i> Liste des locations
             </h2>
         </div>
 
@@ -114,32 +118,34 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Code</th>
-                            <th>Nom</th>
-                            <th>Libellé</th>
-                            <th>Capacité</th>
+                            <th>Code Location</th>
+                            <th>Client</th>
+                            <th>Voiture</th>
+                            <th>Date Début</th>
+                            <th>Date Fin</th>
                             <th style="text-align:center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <%
-                        List<Parc> l = (ArrayList<Parc>) request.getAttribute("parcs");
-                        if (l != null) {
-                            for (Parc p : l) {
+                        List<Location> locations = (ArrayList<Location>) request.getAttribute("locations");
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        if (locations != null) {
+                            for (Location l : locations) {
                         %>
                         <tr>
-                            <td><%= p.getCodeParc() %></td>
-                            <td><%= p.getNomParc() %></td>
-                            <td><%= p.getLibelle() %></td>
-                            <td><%= p.getCapacite() %></td>
+                            <td><%= l.getCodeLocation() %></td>
+                            <td><%= l.getClient() != null ? l.getClient().getNom() + " " + l.getClient().getPrenom() : "-" %></td>
+                            <td><%= l.getVoiture() != null ? l.getVoiture().getModel() : "-" %></td>
+                            <td><%= l.getDateDeb() != null ? sdf.format(l.getDateDeb()) : "-" %></td>
+                            <td><%= l.getDateFin() != null ? sdf.format(l.getDateFin()) : "-" %></td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="/LocationDeVoitures/formModifierParc?id=<%= p.getCodeParc() %>" class="btn btn-warning btn-sm">
-									    <i class="bi bi-pencil-square"></i> Modifier
-									</a>
-
-                                    <a href="deleteParc?codeParc=<%= p.getCodeParc() %>" class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Confirmez-vous la suppression de ce parc ?')">
+                                    <a href="/LocationDeVoitures/admin/formModifierLocation?id=<%= l.getCodeLocation() %>" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil-square"></i> Modifier
+                                    </a>
+                                    <a href="/LocationDeVoitures/admin/deleteLocation?codeLocation=<%= l.getCodeLocation() %>" class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Confirmez-vous la suppression de cette location ?')">
                                         <i class="bi bi-trash"></i> Supprimer
                                     </a>
                                 </div>
@@ -153,9 +159,9 @@
                 </table>
             </div>
 
-            <% if (l == null || l.isEmpty()) { %>
+            <% if (locations == null || locations.isEmpty()) { %>
                 <div class="alert alert-info mt-3">
-                    <i class="bi bi-info-circle"></i> Aucun parc trouvé.
+                    <i class="bi bi-info-circle"></i> Aucune location trouvée.
                 </div>
             <% } %>
         </div>

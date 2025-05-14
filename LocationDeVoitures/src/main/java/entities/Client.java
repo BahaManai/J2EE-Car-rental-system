@@ -9,6 +9,9 @@ public class Client {
     private String email;
     private String tel;
     private int age;
+    private String motDePasse;
+    private String role;
+    
     public Client() {}
 	public Client(int codeClient, String cIN, String nom, String prenom, String adresse, String email, String tel,
 			int age) {
@@ -71,5 +74,8 @@ public class Client {
 	public void setAge(int age) {
 		this.age = age;
 	}
-    
+	public String getMotDePasse() { return motDePasse; }
+    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

@@ -12,50 +12,43 @@ import java.util.List;
 import entities.Parc;
 import entities.Voiture;
 
-/**
- * Servlet implementation class ServletVoiture
- */
-@WebServlet(urlPatterns = {"/ajoutVoiture", "/updateVoiture", "/deleteVoiture", "/listeVoitures", "/formModifierVoiture", "/formAjoutVoiture"})
+@WebServlet(urlPatterns = {
+    "/admin/ajoutVoiture", "/admin/updateVoiture", "/admin/deleteVoiture",
+    "/admin/listeVoitures", "/admin/formModifierVoiture", "/admin/formAjoutVoiture"
+})
 public class ServletVoiture extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	private ModelVoiture modelVoiture = new ModelVoiture();
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+    private static final long serialVersionUID = 1L;
+    private ModelVoiture modelVoiture = new ModelVoiture();
+
     public ServletVoiture() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String path = request.getServletPath();
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String path = request.getServletPath();
         switch (path) {
-            case "/ajoutVoiture":
+            case "/admin/ajoutVoiture":
                 ajouterVoiture(request, response);
                 break;
-            case "/updateVoiture":
+            case "/admin/updateVoiture":
                 modifierVoiture(request, response);
                 break;
-            case "/deleteVoiture":
+            case "/admin/deleteVoiture":
                 supprimerVoiture(request, response);
                 break;
-            case "/listeVoitures":
+            case "/admin/listeVoitures":
                 afficherListeVoitures(request, response);
                 break;
-            case "/formModifierVoiture":
+            case "/admin/formModifierVoiture":
                 afficherFormModification(request, response);
                 break;
-            case "/formAjoutVoiture":
+            case "/admin/formAjoutVoiture":
                 afficherFormAjoutVoiture(request, response);
                 break;
-
         }
-	}
+    }
 
-	private void ajouterVoiture(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void ajouterVoiture(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String matricule = request.getParameter("matricule");
         String model = request.getParameter("model");
         float kilometrage = Float.parseFloat(request.getParameter("kilometrage"));
@@ -67,7 +60,7 @@ public class ServletVoiture extends HttpServlet {
         modelVoiture.setVoiture(voiture);
         modelVoiture.ajouterVoiture();
 
-        response.sendRedirect("Voiture/reussit.html?action=ajoutVoiture");
+        response.sendRedirect(request.getContextPath() + "/admin/Voiture/reussit.html?action=ajoutVoiture");
     }
 
     private void modifierVoiture(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -83,24 +76,23 @@ public class ServletVoiture extends HttpServlet {
         modelVoiture.setVoiture(voiture);
         modelVoiture.modifierVoiture();
 
-        response.sendRedirect("Voiture/reussit.html?action=modificationVoiture");
+        response.sendRedirect(request.getContextPath() + "/admin/Voiture/reussit.html?action=modificationVoiture");
     }
 
     private void supprimerVoiture(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int codeVoiture = Integer.parseInt(request.getParameter("codevoiture"));
         modelVoiture.supprimerVoiture(codeVoiture);
-        response.sendRedirect("Voiture/reussit.html?action=suppressionVoiture");
+        response.sendRedirect(request.getContextPath() + "/admin/Voiture/reussit.html?action=suppressionVoiture");
     }
 
     private void afficherListeVoitures(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Voiture> voitures = modelVoiture.listeVoitures();
         request.setAttribute("voitures", voitures);
-        request.setAttribute("page", "Voiture/listeVoitures.jsp");
-	    request.getRequestDispatcher("adminLayout.jsp").forward(request, response);
+        request.setAttribute("page", "admin/Voiture/listeVoitures.jsp");
+        request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
     }
     
-    private void afficherFormModification(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    private void afficherFormModification(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String idParam = request.getParameter("id");
         if (idParam != null && !idParam.isEmpty()) {
             try {
@@ -111,34 +103,25 @@ public class ServletVoiture extends HttpServlet {
                     request.setAttribute("voiture", voiture); 
                     ModelParc modelParc = new ModelParc();
                     request.setAttribute("parcs", modelParc.getAllParcs()); 
-                    request.setAttribute("page", "Voiture/modifierVoiture.jsp"); 
+                    request.setAttribute("page", "admin/Voiture/modifierVoiture.jsp"); 
                     request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
                     return;
                 }
             } catch (NumberFormatException e) {
             }
         }
-
-        response.sendRedirect("listeVoitures?error=voiture_not_found");
+        response.sendRedirect(request.getContextPath() + "/admin/listeVoitures?error=voiture_not_found");
     }
 
-    private void afficherFormAjoutVoiture(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    private void afficherFormAjoutVoiture(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ModelParc modelParc = new ModelParc();
         List<Parc> parcs = modelParc.getAllParcs();
-        
         request.setAttribute("parcs", parcs);
-        request.setAttribute("page", "Voiture/ajoutVoiture.jsp");
+        request.setAttribute("page", "admin/Voiture/ajoutVoiture.jsp");
         request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
     }
 
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
-
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
+    }
 }
