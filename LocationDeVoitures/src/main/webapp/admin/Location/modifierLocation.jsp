@@ -5,13 +5,14 @@ Location location = (Location) request.getAttribute("location");
 List<Client> clients = (List<Client>) request.getAttribute("clients");
 List<Voiture> voitures = (List<Voiture>) request.getAttribute("voitures");
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+String error = request.getParameter("error");
 %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Modifier Location | Administration Location Voitures</title>
+    <title>Modifier une Location | Administration Location Voitures</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -29,7 +30,6 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             border: none;
-            overflow: hidden;
         }
         .card-header {
             background-color: var(--primary-color);
@@ -47,11 +47,9 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         }
         .btn-primary:hover {
             background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
         }
         .btn-success {
             background-color: var(--success-color);
-            border-color: var(--success-color);
         }
         .form-label {
             font-weight: 500;
@@ -79,6 +77,19 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             </a>
         </div>
 
+        <!-- Error Message -->
+        <% if (error != null) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i>
+                <%= error.equals("invalid_dates") ? "Les dates sont invalides." :
+                    error.equals("invalid_client_or_voiture") ? "Client ou voiture invalide." :
+                    error.equals("invalid_statut") ? "Statut invalide." :
+                    error.equals("date_format") ? "Format de date invalide." :
+                    error.equals("missing_parameters") ? "Tous les champs sont requis." : "Erreur inconnue." %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
         <div class="admin-card">
             <div class="card-header">
                 <h2 class="h4 mb-0">
@@ -86,19 +97,16 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 </h2>
             </div>
             <div class="card-body" style="padding:20px">
-                <form id="modification" action="/LocationDeVoitures/admin/updateLocation" method="post" class="row g-3">
+                <form id="modifierLocation" action="/LocationDeVoitures/admin/updateLocation" method="post" class="row g-3">
                     <input type="hidden" name="codeLocation" value="<%= location.getCodeLocation() %>">
 
                     <div class="col-md-6">
                         <label for="codeClient" class="form-label">Client :</label>
                         <select id="codeClient" name="codeClient" class="form-control" required>
-                            <option value="">-- Sélectionnez un client --</option>
-                            <% for (Client client : clients) {
-                                boolean selected = location.getClient() != null && client.getCodeClient() == location.getClient().getCodeClient();
-                            %>
-                            <option value="<%= client.getCodeClient() %>" <%= selected ? "selected" : "" %>>
-                                <%= client.getNom() + " " + client.getPrenom() %>
-                            </option>
+                            <% for (Client client : clients) { %>
+                                <option value="<%= client.getCodeClient() %>" <%= client.getCodeClient() == location.getClient().getCodeClient() ? "selected" : "" %>>
+                                    <%= client.getNom() %> <%= client.getPrenom() %>
+                                </option>
                             <% } %>
                         </select>
                     </div>
@@ -106,27 +114,31 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     <div class="col-md-6">
                         <label for="codeVoiture" class="form-label">Voiture :</label>
                         <select id="codeVoiture" name="codeVoiture" class="form-control" required>
-                            <option value="">-- Sélectionnez une voiture --</option>
-                            <% for (Voiture voiture : voitures) {
-                                boolean selected = location.getVoiture() != null && voiture.getCodeVoiture() == location.getVoiture().getCodeVoiture();
-                            %>
-                            <option value="<%= voiture.getCodeVoiture() %>" <%= selected ? "selected" : "" %>>
-                                <%= voiture.getModel() + " (" + voiture.getMatricule() + ")" %>
-                            </option>
+                            <% for (Voiture voiture : voitures) { %>
+                                <option value="<%= voiture.getCodeVoiture() %>" <%= voiture.getCodeVoiture() == location.getVoiture().getCodeVoiture() ? "selected" : "" %>>
+                                    <%= voiture.getModel() %> ($<%= String.format("%.2f", voiture.getPrixParJour()) %>/day)
+                                </option>
                             <% } %>
                         </select>
                     </div>
 
                     <div class="col-md-6">
                         <label for="dateDeb" class="form-label">Date Début :</label>
-                        <input type="date" id="dateDeb" name="dateDeb" class="form-control" 
-                               value="<%= location.getDateDeb() != null ? sdf.format(location.getDateDeb()) : "" %>" required>
+                        <input type="date" id="dateDeb" name="dateDeb" class="form-control" value="<%= sdf.format(location.getDateDeb()) %>" required>
                     </div>
 
                     <div class="col-md-6">
                         <label for="dateFin" class="form-label">Date Fin :</label>
-                        <input type="date" id="dateFin" name="dateFin" class="form-control" 
-                               value="<%= location.getDateFin() != null ? sdf.format(location.getDateFin()) : "" %>" required>
+                        <input type="date" id="dateFin" name="dateFin" class="form-control" value="<%= sdf.format(location.getDateFin()) %>" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="statut" class="form-label">Statut :</label>
+                        <select id="statut" name="statut" class="form-control" required>
+                            <option value="en attente" <%= "en attente".equals(location.getStatut()) ? "selected" : "" %>>En attente</option>
+                            <option value="accepté" <%= "accepté".equals(location.getStatut()) ? "selected" : "" %>>Accepté</option>
+                            <option value="refusé" <%= "refusé".equals(location.getStatut()) ? "selected" : "" %>>Refusé</option>
+                        </select>
                     </div>
 
                     <div class="col-12 mt-4">
@@ -141,21 +153,16 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('modification').addEventListener('submit', function(e) {
-            const dateDeb = document.getElementById('dateDeb').value;
-            const dateFin = document.getElementById('dateFin').value;
-
-            const debut = new Date(dateDeb);
-            const fin = new Date(dateFin);
+        document.getElementById('modifierLocation').addEventListener('submit', function(e) {
+            const dateDeb = new Date(document.getElementById('dateDeb').value);
+            const dateFin = new Date(document.getElementById('dateFin').value);
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time for comparison
+            today.setHours(0, 0, 0, 0);
 
-            if (debut < today) {
-                alert('La date de début ne peut pas être antérieure à aujourd\'hui handles the date inputs differently.
+            if (dateDeb < today) {
+                alert('La date de début ne peut pas être antérieure à aujourd\'hui');
                 e.preventDefault();
-            }
-
-            if (fin <= debut) {
+            } else if (dateFin <= dateDeb) {
                 alert('La date de fin doit être postérieure à la date de début');
                 e.preventDefault();
             }

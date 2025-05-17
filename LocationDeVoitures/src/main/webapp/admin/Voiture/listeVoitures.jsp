@@ -85,6 +85,13 @@
             font-size: 0.875rem;
         }
 
+        .car-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
         @media (max-width: 768px) {
             .action-buttons {
                 justify-content: flex-start;
@@ -121,6 +128,8 @@
                             <th>Matricule</th>
                             <th>Modèle</th>
                             <th>Kilométrage</th>
+                            <th>Prix/Jour</th>
+                            <th>Image</th>
                             <th>Code Parc</th>
                             <th style="text-align:center">Actions</th>
                         </tr>
@@ -134,7 +143,15 @@
                         <tr>
                             <td><%= v.getMatricule() %></td>
                             <td><%= v.getModel() %></td>
-                            <td><%= v.getKilometrage() %> km</td>
+                            <td><%= String.format("%.1f", v.getKilometrage()) %> km</td>
+                            <td><%= String.format("%.2f", v.getPrixParJour()) %> DT</td>
+                            <td>
+                                <% if (v.getImage() != null && !v.getImage().isEmpty()) { %>
+                                    <img src="<%= v.getImage() %>" alt="<%= v.getModel() %>" class="car-image">
+                                <% } else { %>
+                                    Aucune image
+                                <% } %>
+                            </td>
                             <td><%= v.getParc() != null ? v.getParc().getCodeParc() : "-" %></td>
                             <td>
                                 <div class="action-buttons">

@@ -47,4 +47,8 @@ public class ModelVoiture {
     public Voiture getVoitureById(int codeVoiture) {
         return daoVoiture.getVoitureById(codeVoiture);
     }
+
+    public int countVoitures() {
+        return listeVoitures().size();
+    }
 }

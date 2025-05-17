@@ -57,5 +57,9 @@ public class ModelClient {
     public List<Client> rechercherParNom(String nom) {
         return daoClient.findByNom(nom);
     }
+    
+    public int countClients() {
+        return listeClients().size(); 
+    }
 
 }

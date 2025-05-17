@@ -20,12 +20,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             const action = urlParams.get("action");
             let message = "";
-            if (action === "ajoutLocation") {
+            if (action === "ajout") {
                 message = "Location ajoutée avec succès !";
-            } else if (action === "modificationLocation") {
+            } else if (action === "modification") {
                 message = "Location modifiée avec succès !";
-            } else if (action === "suppressionLocation") {
+            } else if (action === "suppression") {
                 message = "Location supprimée avec succès !";
+            } else if (action === "statut_accepté") {
+                message = "Location acceptée avec succès !";
+            } else if (action === "statut_refusé") {
+                message = "Location refusée avec succès !";
             } else {
                 message = "Action inconnue.";
             }

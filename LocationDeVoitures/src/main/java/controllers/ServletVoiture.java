@@ -49,34 +49,60 @@ public class ServletVoiture extends HttpServlet {
     }
 
     private void ajouterVoiture(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String matricule = request.getParameter("matricule");
-        String model = request.getParameter("model");
-        float kilometrage = Float.parseFloat(request.getParameter("kilometrage"));
-        int codeParc = Integer.parseInt(request.getParameter("code_parc"));
-        Parc parc = new Parc();
-        parc.setCodeParc(codeParc);
+        try {
+            String matricule = request.getParameter("matricule");
+            String model = request.getParameter("model");
+            float kilometrage = Float.parseFloat(request.getParameter("kilometrage"));
+            float prixParJour = Float.parseFloat(request.getParameter("prix_par_jour"));
+            String image = request.getParameter("image");
+            int codeParc = Integer.parseInt(request.getParameter("code_parc"));
 
-        Voiture voiture = new Voiture(0, matricule, model, kilometrage, parc);
-        modelVoiture.setVoiture(voiture);
-        modelVoiture.ajouterVoiture();
+            // Validate prix_par_jour
+            if (prixParJour < 0) {
+                response.sendRedirect(request.getContextPath() + "/admin/formAjoutVoiture?error=invalid_price");
+                return;
+            }
 
-        response.sendRedirect(request.getContextPath() + "/admin/Voiture/reussit.html?action=ajoutVoiture");
+            Parc parc = new Parc();
+            parc.setCodeParc(codeParc);
+
+            Voiture voiture = new Voiture(0, matricule, model, kilometrage, prixParJour, image, parc);
+            modelVoiture.setVoiture(voiture);
+            modelVoiture.ajouterVoiture();
+
+            response.sendRedirect(request.getContextPath() + "/admin/Voiture/reussit.html?action=ajoutVoiture");
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/admin/formAjoutVoiture?error=invalid_input");
+        }
     }
 
     private void modifierVoiture(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int codeVoiture = Integer.parseInt(request.getParameter("codevoiture"));
-        String matricule = request.getParameter("matricule");
-        String model = request.getParameter("model");
-        float kilometrage = Float.parseFloat(request.getParameter("kilometrage"));
-        int codeParc = Integer.parseInt(request.getParameter("codeParc"));
-        Parc parc = new Parc();
-        parc.setCodeParc(codeParc);
+        try {
+            int codeVoiture = Integer.parseInt(request.getParameter("codevoiture"));
+            String matricule = request.getParameter("matricule");
+            String model = request.getParameter("model");
+            float kilometrage = Float.parseFloat(request.getParameter("kilometrage"));
+            float prixParJour = Float.parseFloat(request.getParameter("prix_par_jour"));
+            String image = request.getParameter("image");
+            int codeParc = Integer.parseInt(request.getParameter("codeParc"));
 
-        Voiture voiture = new Voiture(codeVoiture, matricule, model, kilometrage, parc);
-        modelVoiture.setVoiture(voiture);
-        modelVoiture.modifierVoiture();
+            // Validate prix_par_jour
+            if (prixParJour < 0) {
+                response.sendRedirect(request.getContextPath() + "/admin/formModifierVoiture?id=" + codeVoiture + "&error=invalid_price");
+                return;
+            }
 
-        response.sendRedirect(request.getContextPath() + "/admin/Voiture/reussit.html?action=modificationVoiture");
+            Parc parc = new Parc();
+            parc.setCodeParc(codeParc);
+
+            Voiture voiture = new Voiture(codeVoiture, matricule, model, kilometrage, prixParJour, image, parc);
+            modelVoiture.setVoiture(voiture);
+            modelVoiture.modifierVoiture();
+
+            response.sendRedirect(request.getContextPath() + "/admin/Voiture/reussit.html?action=modificationVoiture");
+        } catch (NumberFormatException e) {
+            response.sendRedirect(request.getContextPath() + "/admin/formModifierVoiture?id=" + request.getParameter("codevoiture") + "&error=invalid_input");
+        }
     }
 
     private void supprimerVoiture(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -91,7 +117,7 @@ public class ServletVoiture extends HttpServlet {
         request.setAttribute("page", "admin/Voiture/listeVoitures.jsp");
         request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
     }
-    
+
     private void afficherFormModification(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String idParam = request.getParameter("id");
         if (idParam != null && !idParam.isEmpty()) {
@@ -100,10 +126,10 @@ public class ServletVoiture extends HttpServlet {
                 ModelVoiture model = new ModelVoiture();
                 Voiture voiture = model.getVoitureById(codeVoiture);
                 if (voiture != null) {
-                    request.setAttribute("voiture", voiture); 
+                    request.setAttribute("voiture", voiture);
                     ModelParc modelParc = new ModelParc();
-                    request.setAttribute("parcs", modelParc.getAllParcs()); 
-                    request.setAttribute("page", "admin/Voiture/modifierVoiture.jsp"); 
+                    request.setAttribute("parcs", modelParc.getAllParcs());
+                    request.setAttribute("page", "admin/Voiture/modifierVoiture.jsp");
                     request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
                     return;
                 }

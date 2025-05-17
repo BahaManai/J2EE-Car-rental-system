@@ -47,4 +47,7 @@ public class ModelParc {
     public Parc getParcById(int codeParc) {
         return daoParc.getParcById(codeParc);
     }
+    public int countParcs() {
+        return getAllParcs().size(); // Or use a direct SQL query via DAO
+    }
 }

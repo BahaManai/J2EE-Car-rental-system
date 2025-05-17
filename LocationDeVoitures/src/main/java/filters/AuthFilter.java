@@ -25,16 +25,25 @@ public class AuthFilter implements Filter {
         String role = isLoggedIn ? (String) session.getAttribute("role") : null;
         String path = httpRequest.getServletPath();
 
+        // Allow unauthenticated access to /client/home and /login
+        if (path.equals("/client/home") || path.equals("/login.jsp")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Redirect unauthenticated users to login
         if (!isLoggedIn) {
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login.jsp");
             return;
         }
 
+        // Restrict /admin to admin role
         if (path.startsWith("/admin") && !"admin".equals(role)) {
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/Client/dashbord.jsp");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/client/home");
             return;
         }
 
+        // Restrict /client to client role
         if (path.startsWith("/client") && !"client".equals(role)) {
             httpResponse.sendRedirect(httpRequest.getContextPath() + "/admin/dashbord.jsp");
             return;

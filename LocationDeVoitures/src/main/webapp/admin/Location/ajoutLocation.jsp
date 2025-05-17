@@ -1,8 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List, java.util.ArrayList, entities.Client, entities.Voiture" %>
+<%@ page import="java.util.List, entities.Client, entities.Voiture" %>
 <%
 List<Client> clients = (List<Client>) request.getAttribute("clients");
 List<Voiture> voitures = (List<Voiture>) request.getAttribute("voitures");
+String error = request.getParameter("error");
 %>
 <!DOCTYPE html>
 <html lang="fr">
@@ -49,8 +50,8 @@ List<Voiture> voitures = (List<Voiture>) request.getAttribute("voitures");
             border-color: var(--secondary-color);
         }
         .btn-success {
-            background-color: --success-color;
-            border-color: --success-color;
+            background-color: var(--success-color);
+            border-color: var(--success-color);
         }
         .form-label {
             font-weight: 500;
@@ -92,6 +93,18 @@ List<Voiture> voitures = (List<Voiture>) request.getAttribute("voitures");
             </div>
         </div>
 
+        <!-- Error Message -->
+        <% if (error != null) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i>
+                <%= error.equals("invalid_dates") ? "Les dates sont invalides." :
+                    error.equals("invalid_client_or_voiture") ? "Client ou voiture invalide." :
+                    error.equals("date_format") ? "Format de date invalide." :
+                    error.equals("missing_parameters") ? "Tous les champs sont requis." : "Erreur inconnue." %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
         <!-- Carte -->
         <div class="admin-card">
             <div class="card-header">
@@ -111,7 +124,7 @@ List<Voiture> voitures = (List<Voiture>) request.getAttribute("voitures");
                         <select id="codeClient" name="codeClient" class="form-control" required>
                             <option value="">-- Sélectionnez un client --</option>
                             <% for (Client client : clients) { %>
-                                <option value="<%= client.getCodeClient() %>"><%= client.getNom() + " " + client.getPrenom() %></option>
+                                <option value="<%= client.getCodeClient() %>"><%= client.getNom() %> <%= client.getPrenom() %></option>
                             <% } %>
                         </select>
                     </div>
@@ -121,7 +134,9 @@ List<Voiture> voitures = (List<Voiture>) request.getAttribute("voitures");
                         <select id="codeVoiture" name="codeVoiture" class="form-control" required>
                             <option value="">-- Sélectionnez une voiture --</option>
                             <% for (Voiture voiture : voitures) { %>
-                                <option value="<%= voiture.getCodeVoiture() %>"><%= voiture.getModel() + " (" + voiture.getMatricule() + ")" %></option>
+                                <option value="<%= voiture.getCodeVoiture() %>">
+                                    <%= voiture.getModel() %> ($<%= String.format("%.2f", voiture.getPrixParJour()) %>/day)
+                                </option>
                             <% } %>
                         </select>
                     </div>
@@ -149,26 +164,15 @@ List<Voiture> voitures = (List<Voiture>) request.getAttribute("voitures");
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('ajoutLocation').addEventListener('submit', function(e) {
-            const codeLocation = document.getElementById('codeLocation').value;
-            const dateDeb = document.getElementById('dateDeb').value;
-            const dateFin = document.getElementById('dateFin').value;
-
-            if (codeLocation < 0) {
-                alert('Le code de location ne peut pas être négatif');
-                e.preventDefault();
-            }
-
-            const debut = new Date(dateDeb);
-            const fin = new Date(dateFin);
+            const dateDeb = new Date(document.getElementById('dateDeb').value);
+            const dateFin = new Date(document.getElementById('dateFin').value);
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time for comparison
+            today.setHours(0, 0, 0, 0);
 
-            if (debut < today) {
+            if (dateDeb < today) {
                 alert('La date de début ne peut pas être antérieure à aujourd\'hui');
                 e.preventDefault();
-            }
-
-            if (fin <= debut) {
+            } else if (dateFin <= dateDeb) {
                 alert('La date de fin doit être postérieure à la date de début');
                 e.preventDefault();
             }

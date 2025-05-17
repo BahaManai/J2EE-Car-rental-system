@@ -68,7 +68,7 @@
             <div class="p-4 flex items-center justify-between border-b border-gray-700">
                 <div class="flex items-center space-x-2">
                     <i class="fas fa-car text-blue-400 text-2xl"></i>
-                    <span class="logo-text text-xl font-bold">J2EE Project</span>
+                    <span class="logo-text text-xl font-bold">RentRover</span>
                 </div>
                 <button id="toggleSidebar" class="text-gray-400 hover:text-white focus:outline-none">
                     <i class="fas fa-bars"></i>

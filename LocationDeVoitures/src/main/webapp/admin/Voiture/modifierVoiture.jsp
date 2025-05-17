@@ -4,12 +4,14 @@
 <%
 Voiture voiture = (Voiture) request.getAttribute("voiture");
 List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
+String error = request.getParameter("error");
 %>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Modifier Voiture | Administration Location Voitures</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -56,6 +58,22 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
         .btn-success {
             background-color: var(--success-color);
         }
+
+        .form-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-control {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid #ced4da;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
     </style>
 </head>
 <body>
@@ -68,6 +86,15 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
                 <i class="bi bi-list-ul"></i> Liste des voitures
             </a>
         </div>
+
+        <!-- Error Message -->
+        <% if (error != null) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i>
+                <%= error.equals("invalid_price") ? "Le prix par jour doit être non négatif." : "Entrée invalide. Veuillez vérifier les champs." %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
 
         <div class="admin-card">
             <div class="card-header">
@@ -98,6 +125,18 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
                     </div>
 
                     <div class="col-md-6">
+                        <label for="prix_par_jour" class="form-label">Prix par jour ($) :</label>
+                        <input type="number" id="prix_par_jour" name="prix_par_jour" step="0.01" min="0" class="form-control" 
+                               value="<%= String.format("%.2f", voiture.getPrixParJour()) %>" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="image" class="form-label">Image (URL) :</label>
+                        <input type="text" id="image" name="image" class="form-control" 
+                               value="<%= voiture.getImage() != null ? voiture.getImage() : "" %>" placeholder="Ex : /images/cars/model.jpg">
+                    </div>
+
+                    <div class="col-md-6">
                         <label for="codeParc" class="form-label">Parc :</label>
                         <select name="codeParc" id="codeParc" class="form-control" required>
                             <%
@@ -122,5 +161,19 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('modification').addEventListener('submit', function(e) {
+            const kilometrage = parseFloat(document.getElementById('kilometrage').value);
+            const prixParJour = parseFloat(document.getElementById('prix_par_jour').value);
+            if (kilometrage < 0) {
+                alert('Le kilométrage ne peut pas être négatif');
+                e.preventDefault();
+            }
+            if (prixParJour < 0) {
+                alert('Le prix par jour ne peut pas être négatif');
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>

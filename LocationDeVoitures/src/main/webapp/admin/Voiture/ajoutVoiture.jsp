@@ -2,6 +2,7 @@
 <%@ page import="java.util.List, java.util.ArrayList, entities.Parc" %>
 <%
 List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
+String error = request.getParameter("error");
 %>
 <!DOCTYPE html>
 <html lang="fr">
@@ -91,6 +92,15 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
             </div>
         </div>
 
+        <!-- Error Message -->
+        <% if (error != null) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i>
+                <%= error.equals("invalid_price") ? "Le prix par jour doit être non négatif." : "Entrée invalide. Veuillez vérifier les champs." %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
         <!-- Carte -->
         <div class="admin-card">
             <div class="card-header">
@@ -116,6 +126,16 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
                     </div>
 
                     <div class="col-md-6">
+                        <label for="prix_par_jour" class="form-label">Prix par jour ($) :</label>
+                        <input type="number" id="prix_par_jour" name="prix_par_jour" step="0.01" min="0" class="form-control" required placeholder="Ex : 50.00">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="image" class="form-label">Image (URL) :</label>
+                        <input type="text" id="image" name="image" class="form-control" placeholder="Ex : /images/cars/model.jpg">
+                    </div>
+
+                    <div class="col-md-6">
                         <label for="code_parc" class="form-label">Parc :</label>
                         <select id="code_parc" name="code_parc" class="form-control" required>
                             <option value="">-- Sélectionnez un parc --</option>
@@ -138,9 +158,14 @@ List<Parc> parcs = (List<Parc>) request.getAttribute("parcs");
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('ajoutVoiture').addEventListener('submit', function(e) {
-            const kilometrage = document.getElementById('kilometrage').value;
+            const kilometrage = parseFloat(document.getElementById('kilometrage').value);
+            const prixParJour = parseFloat(document.getElementById('prix_par_jour').value);
             if (kilometrage < 0) {
                 alert('Le kilométrage ne peut pas être négatif');
+                e.preventDefault();
+            }
+            if (prixParJour < 0) {
+                alert('Le prix par jour ne peut pas être négatif');
                 e.preventDefault();
             }
         });

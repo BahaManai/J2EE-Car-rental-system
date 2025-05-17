@@ -14,6 +14,7 @@
             --secondary-color: #2980b9;
             --danger-color: #e74c3c;
             --warning-color: #f39c12;
+            --success-color: #2ecc71;
             --light-bg: #f8f9fa;
         }
 
@@ -74,10 +75,16 @@
             border-color: var(--danger-color);
         }
 
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
         .action-buttons {
             display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .action-buttons .btn {
@@ -85,10 +92,14 @@
             font-size: 0.875rem;
         }
 
+        .badge {
+            font-size: 0.875rem;
+            padding: 0.5em 0.75em;
+        }
+
         @media (max-width: 768px) {
             .action-buttons {
                 justify-content: flex-start;
-                flex-wrap: wrap;
             }
         }
     </style>
@@ -123,6 +134,7 @@
                             <th>Voiture</th>
                             <th>Date Début</th>
                             <th>Date Fin</th>
+                            <th>Statut</th>
                             <th style="text-align:center">Actions</th>
                         </tr>
                     </thead>
@@ -140,7 +152,22 @@
                             <td><%= l.getDateDeb() != null ? sdf.format(l.getDateDeb()) : "-" %></td>
                             <td><%= l.getDateFin() != null ? sdf.format(l.getDateFin()) : "-" %></td>
                             <td>
+                                <span class="badge <%= l.getStatut().equals("en attente") ? "bg-warning" : l.getStatut().equals("accepté") ? "bg-success" : "bg-danger" %>">
+                                    <%= l.getStatut() %>
+                                </span>
+                            </td>
+                            <td>
                                 <div class="action-buttons">
+                                    <% if ("en attente".equals(l.getStatut())) { %>
+                                        <a href="/LocationDeVoitures/admin/updateLocationStatus?codeLocation=<%= l.getCodeLocation() %>&statut=accepté" class="btn btn-success btn-sm"
+                                           onclick="return confirm('Confirmez-vous l\'acceptation de cette location ?')">
+                                            <i class="bi bi-check-circle"></i> Accepter
+                                        </a>
+                                        <a href="/LocationDeVoitures/admin/updateLocationStatus?codeLocation=<%= l.getCodeLocation() %>&statut=refusé" class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Confirmez-vous le refus de cette location ?')">
+                                            <i class="bi bi-x-circle"></i> Refuser
+                                        </a>
+                                    <% } %>
                                     <a href="/LocationDeVoitures/admin/formModifierLocation?id=<%= l.getCodeLocation() %>" class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil-square"></i> Modifier
                                     </a>

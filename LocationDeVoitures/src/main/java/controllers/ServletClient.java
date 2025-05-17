@@ -6,6 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.ModelClient;
+import model.ModelLocation;
+import model.ModelParc;
+import model.ModelVoiture;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,17 +26,14 @@ public class ServletClient extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
     private ModelClient modelClient = new ModelClient();
+    private ModelLocation modelLocation = new ModelLocation();
+    private ModelParc modelParc = new ModelParc();
+    private ModelVoiture modelVoiture = new ModelVoiture();
 
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public ServletClient() {
         super();
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getServletPath();
         switch (path) {
@@ -56,7 +56,7 @@ public class ServletClient extends HttpServlet {
                 afficherFormModifierClient(request, response);
                 break;
             case "/admin/dashboard":
-                afficherAdminDashbord(request, response);
+                afficherAdminDashboard(request, response);
                 break;
         }
     }
@@ -112,7 +112,25 @@ public class ServletClient extends HttpServlet {
         request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
     }
     
-    private void afficherAdminDashbord(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void afficherAdminDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Récupérer les comptes pour les graphiques
+        int clientCount = modelClient.countClients();
+        int locationCount = modelLocation.countLocations();
+        int parcCount = modelParc.countParcs();
+        int voitureCount = modelVoiture.countVoitures();
+        
+        // Supposons que les locations actives sont celles où la date de fin est dans le futur
+        int activeLocations = modelLocation.countActiveLocations();
+        int completedLocations = locationCount - activeLocations;
+
+        // Définir les attributs de la requête pour le JSP
+        request.setAttribute("clientCount", clientCount);
+        request.setAttribute("locationCount", locationCount);
+        request.setAttribute("parcCount", parcCount);
+        request.setAttribute("voitureCount", voitureCount);
+        request.setAttribute("activeLocations", activeLocations);
+        request.setAttribute("completedLocations", completedLocations);
+
         request.setAttribute("page", "admin/dashbord.jsp");
         request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
     }
@@ -122,8 +140,7 @@ public class ServletClient extends HttpServlet {
         if (idParam != null && !idParam.isEmpty()) {
             try {
                 int codeClient = Integer.parseInt(idParam);
-                ModelClient model = new ModelClient();
-                Client client = model.getClientById(codeClient);
+                Client client = modelClient.getClientById(codeClient);
                 if (client != null) {
                     request.setAttribute("client", client);
                     request.setAttribute("page", "admin/Client/modifierClient.jsp");
@@ -136,9 +153,6 @@ public class ServletClient extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/admin/listeClients?error=client_not_found");
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }

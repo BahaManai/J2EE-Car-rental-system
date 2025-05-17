@@ -39,7 +39,7 @@ public class LoginServlet extends HttpServlet {
             if ("admin".equals(client.getRole())) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else {
-                response.sendRedirect(request.getContextPath() + "/Client/dashbord.jsp");
+                response.sendRedirect(request.getContextPath() + "/client/home");
             }
         } else {
             request.setAttribute("error", "Email ou mot de passe incorrect.");
