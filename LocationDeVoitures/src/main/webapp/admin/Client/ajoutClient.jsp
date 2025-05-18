@@ -145,6 +145,16 @@
                         <input type="text" id="adresse" name="adresse" class="form-control" required placeholder="Adresse">
                     </div>
                     
+                    <div class="col-md-6">
+                        <label for="password" class="form-label">Mot de passe :</label>
+                        <input type="password" id="password" name="password" class="form-control" required placeholder="Mot de passe">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="passwordConfirmation" class="form-label">Confirmation du mot de passe :</label>
+                        <input type="password" id="passwordConfirmation" name="passwordConfirmation" class="form-control" required placeholder="Confirmer le mot de passe">
+                    </div>
+                    
                     <div class="col-12 mt-4">
                         <button type="submit" class="btn btn-success px-4 py-2">
                             <i class="bi bi-save"></i> Enregistrer le client
@@ -160,6 +170,8 @@
         document.getElementById('ajout').addEventListener('submit', function(e) {
             const tel = document.getElementById('tel').value;
             const age = document.getElementById('age').value;
+            const password = document.getElementById('password').value;
+            const passwordConfirmation = document.getElementById('passwordConfirmation').value;
             
             if (!/^[0-9]{8}$/.test(tel)) {
                 alert('Veuillez entrer un numéro de téléphone valide (8 chiffres)');
@@ -172,7 +184,18 @@
                 e.preventDefault();
                 return;
             }
-          
+            
+            if (password.length < 6) {
+                alert('Le mot de passe doit contenir au moins 6 caractères');
+                e.preventDefault();
+                return;
+            }
+            
+            if (password !== passwordConfirmation) {
+                alert('Les mots de passe ne correspondent pas');
+                e.preventDefault();
+                return;
+            }
         });
     </script>
 </body>

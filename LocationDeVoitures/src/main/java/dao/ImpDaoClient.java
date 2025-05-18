@@ -15,7 +15,7 @@ public class ImpDaoClient implements IDaoClient {
 
     @Override
     public void ajouterClient(Client client) {
-        String sql = "INSERT INTO client (code_client, CIN, nom, prenom, adresse, email, tel, age) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO client (code_client, CIN, nom, prenom, adresse, email, tel, age, mot_de_passe) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, client.getCodeClient());
@@ -26,17 +26,19 @@ public class ImpDaoClient implements IDaoClient {
             ps.setString(6, client.getEmail());
             ps.setString(7, client.getTel());
             ps.setInt(8, client.getAge());
+            ps.setString(9, client.getMotDePasse());
 
             ps.executeUpdate();
             System.out.println("Client ajouté avec succès.");
-        }  catch (SQLException e) {
+        } catch (SQLException e) {
+            System.err.println("Error adding client: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @Override
     public void modifierClient(Client client) {
-        String sql = "UPDATE client SET CIN = ?, nom = ?, prenom = ?, adresse = ?, email = ?, tel = ?, age = ? WHERE code_client = ?";
+        String sql = "UPDATE client SET CIN = ?, nom = ?, prenom = ?, adresse = ?, email = ?, tel = ?, age = ?, mot_de_passe = ? WHERE code_client = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, client.getCIN());
@@ -46,11 +48,13 @@ public class ImpDaoClient implements IDaoClient {
             ps.setString(5, client.getEmail());
             ps.setString(6, client.getTel());
             ps.setInt(7, client.getAge());
-            ps.setInt(8, client.getCodeClient());
+            ps.setString(8, client.getMotDePasse() != null ? client.getMotDePasse() : null);
+            ps.setInt(9, client.getCodeClient());
 
             ps.executeUpdate();
             System.out.println("Client modifié avec succès.");
-        }  catch (SQLException e) {
+        } catch (SQLException e) {
+            System.err.println("Error modifying client: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -64,38 +68,51 @@ public class ImpDaoClient implements IDaoClient {
             
             ps.executeUpdate();
             System.out.println("Client supprimé avec succès.");
-        }  catch (SQLException e) {
+        } catch (SQLException e) {
+            System.err.println("Error deleting client: " + e.getMessage());
             e.printStackTrace();
         }
     }
     
+    @Override
     public ArrayList<Client> listeClients() {
-		ArrayList<Client> l = new ArrayList<>();
-
-		try {
-			if (con == null) {
-				System.err.println("Connection is null.");
-				return l;
-			}
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM client");
-
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				l.add(new Client(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),
-						rs.getString(6), rs.getString(7), rs.getInt(8)));
-			}
-			rs.close();
-			ps.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return l;
-	}
+        ArrayList<Client> l = new ArrayList<>();
+        String sql = "SELECT code_client, CIN, nom, prenom, adresse, email, tel, age FROM client";
+        
+        try {
+            if (con == null) {
+                System.err.println("Connection is null.");
+                return l;
+            }
+            System.out.println("Executing query: " + sql);
+            try (PreparedStatement ps = con.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Client c = new Client();
+                    c.setCodeClient(rs.getInt("code_client"));
+                    c.setCIN(rs.getString("CIN"));
+                    c.setNom(rs.getString("nom"));
+                    c.setPrenom(rs.getString("prenom"));
+                    c.setAdresse(rs.getString("adresse"));
+                    c.setEmail(rs.getString("email"));
+                    c.setTel(rs.getString("tel"));
+                    c.setAge(rs.getInt("age"));
+                    l.add(c);
+                    System.out.println("Found client: " + c.getCIN() + ", " + c.getNom() + " " + c.getPrenom());
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching clients: " + e.getMessage());
+            e.printStackTrace();
+        }
+        System.out.println("Total clients found: " + l.size());
+        return l;
+    }
     
-    
+    @Override
     public Client getClientById(int codeClient) {
         System.out.println("DEBUG: Searching for client ID: " + codeClient);
-        String sql = "SELECT * FROM client WHERE code_client = ?";
+        String sql = "SELECT code_client, CIN, nom, prenom, adresse, email, tel, age FROM client WHERE code_client = ?";
         
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, codeClient);
@@ -125,7 +142,7 @@ public class ImpDaoClient implements IDaoClient {
     }
     
     public Client findByNCIN(String cin) {
-        String sql = "SELECT * FROM client WHERE CIN = ?";
+        String sql = "SELECT code_client, CIN, nom, prenom, adresse, email, tel, age FROM client WHERE CIN = ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, cin);
             ResultSet rs = ps.executeQuery();
@@ -142,6 +159,7 @@ public class ImpDaoClient implements IDaoClient {
                 return c;
             }
         } catch (SQLException e) {
+            System.err.println("Error in findByNCIN: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -149,7 +167,7 @@ public class ImpDaoClient implements IDaoClient {
 
     public List<Client> findByNom(String nom) {
         List<Client> clients = new ArrayList<>();
-        String sql = "SELECT * FROM client WHERE nom LIKE ?";
+        String sql = "SELECT code_client, CIN, nom, prenom, adresse, email, tel, age FROM client WHERE nom LIKE ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, "%" + nom + "%");
             ResultSet rs = ps.executeQuery();
@@ -166,12 +184,15 @@ public class ImpDaoClient implements IDaoClient {
                 clients.add(c);
             }
         } catch (SQLException e) {
+            System.err.println("Error in findByNom: " + e.getMessage());
             e.printStackTrace();
         }
         return clients;
     }
+
+    @Override
     public Client findByEmailAndPassword(String email, String motDePasse) {
-        String sql = "SELECT * FROM client WHERE email = ? AND mot_de_passe = ?";
+        String sql = "SELECT code_client, CIN, nom, prenom, adresse, email, tel, age, mot_de_passe, role FROM client WHERE email = ? AND mot_de_passe = ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, motDePasse);
@@ -179,15 +200,19 @@ public class ImpDaoClient implements IDaoClient {
             if (rs.next()) {
                 Client c = new Client();
                 c.setCodeClient(rs.getInt("code_client"));
+                c.setCIN(rs.getString("CIN"));
                 c.setNom(rs.getString("nom"));
                 c.setPrenom(rs.getString("prenom"));
-                c.setCIN(rs.getString("CIN"));
+                c.setAdresse(rs.getString("adresse"));
                 c.setEmail(rs.getString("email"));
+                c.setTel(rs.getString("tel"));
+                c.setAge(rs.getInt("age"));
                 c.setMotDePasse(rs.getString("mot_de_passe"));
                 c.setRole(rs.getString("role"));
                 return c;
             }
         } catch (SQLException e) {
+            System.err.println("Error in findByEmailAndPassword: " + e.getMessage());
             e.printStackTrace();
         }
         return null;

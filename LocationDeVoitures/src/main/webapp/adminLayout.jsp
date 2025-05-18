@@ -30,6 +30,12 @@
         .sidebar-collapsed .logo-text {
             display: none;
         }
+        .sidebar-collapsed .user-nom-div {
+            display: none;
+        }
+        .sidebar-collapsed .user-icon-circle {
+            display: none;
+        }
         .sidebar-collapsed .nav-item {
             justify-content: center;
         }
@@ -166,7 +172,7 @@
                     <div class="user-icon-circle">
                         <i class="fas <%= "admin".equals(role) ? "fa-user-tie" : "fa-user" %>"></i>
                     </div>
-                    <div>
+                    <div class ="user-nom-div">
                         <div class="font-medium"><%= userName %></div>
                         <div class="text-xs text-gray-400"><%= role != null ? role.substring(0, 1).toUpperCase() + role.substring(1) : "Inconnu" %></div>
                     </div>

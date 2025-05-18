@@ -131,24 +131,26 @@
                             <tr>
                                 <th>CIN</th>
                                 <th>Nom</th>
-                                <th>Prénom</th>
                                 <th>Email</th>
                                 <th>Téléphone</th>
+                                <th>Adresse</th>
+                                <th>Age</th>
                                 <th style="text-align:center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <%
                             List<Client> l = (ArrayList<Client>)request.getAttribute("clients");
-                            if(l != null) {
+                            if(l != null && !l.isEmpty()) {
                                 for(Client client : l) {
                             %>
                                 <tr>
-                                    <td><%= client.getCIN() %></td>
-                                    <td><%= client.getNom() %></td>
-                                    <td><%= client.getPrenom() %></td>
-                                    <td><%= client.getEmail() %></td>
-                                    <td><%= client.getTel() %></td>
+                                    <td><%= client.getCIN() != null ? client.getCIN() : "-" %></td>
+                                    <td><%= (client.getNom() != null ? client.getNom() : "") + " " + (client.getPrenom() != null ? client.getPrenom() : "") %></td>
+                                    <td><%= client.getEmail() != null ? client.getEmail() : "-" %></td>
+                                    <td><%= client.getTel() != null ? client.getTel() : "-" %></td>
+                                    <td><%= client.getAdresse() != null ? client.getAdresse() : "-" %></td>
+                                    <td><%= client.getAge() != 0 ? client.getAge() : "-" %></td>
                                     <td>
                                         <div class="action-buttons">
                                             <a href="/LocationDeVoitures/admin/formModifierClient?id=<%= client.getCodeClient() %>" 
@@ -163,7 +165,10 @@
                                         </div>
                                     </td>
                                 </tr>
-                            <% }} %>
+                            <% 
+                                }
+                            } 
+                            %>
                         </tbody>
                     </table>
                 </div>

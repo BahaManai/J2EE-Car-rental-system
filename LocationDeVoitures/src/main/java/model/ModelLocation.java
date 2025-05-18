@@ -2,6 +2,9 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
 
 import dao.ImpDaoLocation;
 import entities.Location;
@@ -76,18 +79,35 @@ public class ModelLocation {
     }
 
     public int countLocations() {
-        return listeLocations().size(); // Or use a direct SQL query via DAO
+        return daoLocation.countLocations(); // Utiliser une requête SQL directe
     }
 
     public int countActiveLocations() {
-        // Count locations with statut = "accepté" and end date in the future
-        int count = 0;
-        java.util.Date today = new java.util.Date();
-        for (Location location : getLocationsByStatus("accepté")) {
-            if (location.getDateFin().after(today)) {
-                count++;
-            }
+        return daoLocation.countActiveLocations(); // Utiliser une requête SQL directe
+    }
+
+    public double calculateTotalRevenue() {
+        return daoLocation.calculateTotalRevenue(); // Somme des prix des locations acceptées
+    }
+
+    public List<Double> getRevenuePerParc() {
+        return daoLocation.getRevenuePerParc(); // Revenus par parc
+    }
+
+    public List<String> getRevenueMonths() {
+        // Retourner les 6 derniers mois
+        List<String> months = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy");
+        Calendar cal = Calendar.getInstance();
+        for (int i = 5; i >= 0; i--) {
+            cal.setTime(new Date());
+            cal.add(Calendar.MONTH, -i);
+            months.add(sdf.format(cal.getTime()));
         }
-        return count; // Or use a direct SQL query
+        return months;
+    }
+
+    public List<Double> getMonthlyRevenue() {
+        return daoLocation.getMonthlyRevenue(); // Revenus par mois
     }
 }

@@ -118,20 +118,24 @@
                             <th>Nom</th>
                             <th>Libellé</th>
                             <th>Capacité</th>
+                            <th>Nb voitures actuels</th>
                             <th style="text-align:center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <%
                         List<Parc> l = (ArrayList<Parc>) request.getAttribute("parcs");
-                        if (l != null) {
+                        System.out.println("listeParcs.jsp: parcs attribute is " + (l == null ? "null" : "size=" + l.size()));
+                        if (l != null && !l.isEmpty()) {
                             for (Parc p : l) {
+                                System.out.println("Displaying parc: " + p.getCodeParc() + ", " + p.getNomParc());
                         %>
                         <tr>
                             <td><%= p.getCodeParc() %></td>
-                            <td><%= p.getNomParc() %></td>
-                            <td><%= p.getLibelle() %></td>
+                            <td><%= p.getNomParc() != null ? p.getNomParc() : "-" %></td>
+                            <td><%= p.getLibelle() != null ? p.getLibelle() : "-" %></td>
                             <td><%= p.getCapacite() %></td>
+                            <td><%= p.getNbVoitures() %></td>
                             <td>
                                 <div class="action-buttons">
                                     <a href="/LocationDeVoitures/admin/formModifierParc?id=<%= p.getCodeParc() %>" class="btn btn-warning btn-sm">
@@ -146,17 +150,16 @@
                         </tr>
                         <%
                             }
-                        }
+                        } else {
+                            System.out.println("No parcs to display");
                         %>
+                            <tr>
+                                <td colspan="6" class="text-center">Aucun parc trouvé.</td>
+                            </tr>
+                        <% } %>
                     </tbody>
                 </table>
             </div>
-
-            <% if (l == null || l.isEmpty()) { %>
-                <div class="alert alert-info mt-3">
-                    <i class="bi bi-info-circle"></i> Aucun parc trouvé.
-                </div>
-            <% } %>
         </div>
     </div>
 </div>

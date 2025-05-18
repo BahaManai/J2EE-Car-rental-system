@@ -21,6 +21,31 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        .stats-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .stats-card p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
         .admin-card {
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -36,23 +61,16 @@
         }
 
         .chart-container {
-            max-width: 600px;
-            margin: 2rem auto;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
+            max-width: 100%;
+            margin: 2rem 0;
         }
 
         @media (max-width: 768px) {
+            .stats-card p {
+                font-size: 1.5rem;
+            }
             .chart-container {
                 max-width: 100%;
-            }
-            .action-buttons {
-                justify-content: center;
-                flex-wrap: wrap;
             }
         }
     </style>
@@ -60,43 +78,83 @@
 <body>
     <div class="container py-5">
         <!-- En-tête -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="mb-4">
             <h1 class="h3 text-primary">
                 <i class="bi bi-speedometer2"></i> Tableau de Bord Admin
             </h1>
-            <div class="action-buttons">
-                <a href="/LocationDeVoitures/admin/listeClients" class="btn btn-primary">
-                    <i class="bi bi-people-fill"></i> Clients
-                </a>
-                <a href="/LocationDeVoitures/admin/listeLocations" class="btn btn-primary">
-                    <i class="bi bi-car-front-fill"></i> Locations
-                </a>
-                <a href="/LocationDeVoitures/admin/listeParcs" class="btn btn-primary">
-                    <i class="bi bi-buildings"></i> Parcs
-                </a>
-                <a href="/LocationDeVoitures/admin/listeVoitures" class="btn btn-primary">
-                    <i class="bi bi-truck"></i> Voitures
-                </a>
+        </div>
+
+        <!-- Cartes de statistiques -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stats-card">
+                    <h3>Clients Actifs</h3>
+                    <p><%= request.getAttribute("clientCount") %></p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stats-card">
+                    <h3>Locations en Cours</h3>
+                    <p><%= request.getAttribute("activeLocations") %></p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stats-card">
+                    <h3>Revenu Total</h3>
+                    <p><%= request.getAttribute("totalRevenue") %> DT</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stats-card">
+                    <h3>Taux d'Occupation</h3>
+                    <p><%= request.getAttribute("occupancyRate") %> %</p>
+                </div>
             </div>
         </div>
 
-        <!-- Carte principale -->
-        <div class="admin-card">
-            <div class="card-header">
-                <h2 class="h4 mb-0">
-                    <i class="bi bi-bar-chart"></i> Statistiques Générales
-                </h2>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
+        <!-- Graphiques -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">
+                            <i class="bi bi-bar-chart"></i> Revenus par Parc
+                        </h2>
+                    </div>
+                    <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="entityCountChart"></canvas>
+                            <canvas id="revenuePerParcChart"></canvas>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">
+                            <i class="bi bi-pie-chart"></i> Types de Voitures
+                        </h2>
+                    </div>
+                    <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="locationStatusChart"></canvas>
+                            <canvas id="carTypeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <h2 class="h4 mb-0">
+                            <i class="bi bi-graph-up"></i> Évolution des Revenus
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="revenueEvolutionChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -105,44 +163,32 @@
     </div>
 
     <script>
-        // Données passées depuis le servlet
-        const entityCounts = {
-            clients: <%= request.getAttribute("clientCount") %>,
-            locations: <%= request.getAttribute("locationCount") %>,
-            parcs: <%= request.getAttribute("parcCount") %>,
-            voitures: <%= request.getAttribute("voitureCount") %>
+        // Données simulées (à remplacer par les données réelles du servlet)
+        const revenuePerParc = {
+            labels: <%= request.getAttribute("parcNames") != null ? request.getAttribute("parcNames") : "['Parc A', 'Parc B', 'Parc C']" %>,
+            data: <%= request.getAttribute("revenuePerParc") != null ? request.getAttribute("revenuePerParc") : "[15000, 22000, 9000]" %>
         };
 
-        const locationStatuses = {
-            active: <%= request.getAttribute("activeLocations") %>,
-            completed: <%= request.getAttribute("completedLocations") %>
+        const carTypes = {
+            labels: <%= request.getAttribute("carTypeLabels") != null ? request.getAttribute("carTypeLabels") : "['Compactes', 'SUV', 'Luxe']" %>,
+            data: <%= request.getAttribute("carTypeData") != null ? request.getAttribute("carTypeData") : "[20, 15, 10]" %>
         };
 
-        // Bar Chart pour les counts
-        const entityCountChart = new Chart(document.getElementById('entityCountChart'), {
+        const revenueEvolution = {
+            labels: <%= request.getAttribute("revenueMonths") != null ? request.getAttribute("revenueMonths") : "['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin']" %>,
+            data: <%= request.getAttribute("revenueEvolutionData") != null ? request.getAttribute("revenueEvolutionData") : "[5000, 7000, 10000, 12000, 15000, 18000]" %>
+        };
+
+        // Graphique en barres : Revenus par Parc
+        const revenuePerParcChart = new Chart(document.getElementById('revenuePerParcChart'), {
             type: 'bar',
             data: {
-                labels: ['Clients', 'Locations', 'Parcs', 'Voitures'],
+                labels: revenuePerParc.labels,
                 datasets: [{
-                    label: 'Nombre',
-                    data: [
-                        entityCounts.clients,
-                        entityCounts.locations,
-                        entityCounts.parcs,
-                        entityCounts.voitures
-                    ],
-                    backgroundColor: [
-                        'rgba(52, 152, 219, 0.6)',
-                        'rgba(46, 204, 113, 0.6)',
-                        'rgba(241, 196, 15, 0.6)',
-                        'rgba(231, 76, 60, 0.6)'
-                    ],
-                    borderColor: [
-                        'rgba(52, 152, 219, 1)',
-                        'rgba(46, 204, 113, 1)',
-                        'rgba(241, 196, 15, 1)',
-                        'rgba(231, 76, 60, 1)'
-                    ],
+                    label: 'Revenus (€)',
+                    data: revenuePerParc.data,
+                    backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
                     borderWidth: 1
                 }]
             },
@@ -150,48 +196,66 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Nombre'
-                        }
+                        title: { display: true, text: 'Revenus (€)' }
                     }
                 },
                 plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Nombre d\'Entités'
-                    }
+                    legend: { display: false },
+                    title: { display: true, text: 'Revenus par Parc' }
                 }
             }
         });
 
-        // Pie Chart pour les statuts des locations
-        const locationStatusChart = new Chart(document.getElementById('locationStatusChart'), {
+        // Graphique circulaire : Types de Voitures
+        const carTypeChart = new Chart(document.getElementById('carTypeChart'), {
             type: 'pie',
             data: {
-                labels: ['Actives', 'Terminées'],
+                labels: carTypes.labels,
                 datasets: [{
-                    data: [locationStatuses.active, locationStatuses.completed],
+                    data: carTypes.data,
                     backgroundColor: [
                         'rgba(52, 152, 219, 0.6)',
-                        'rgba(46, 204, 113, 0.6)'
+                        'rgba(46, 204, 113, 0.6)',
+                        'rgba(241, 196, 15, 0.6)'
                     ],
                     borderColor: [
                         'rgba(52, 152, 219, 1)',
-                        'rgba(46, 204, 113, 1)'
+                        'rgba(46, 204, 113, 1)',
+                        'rgba(241, 196, 15, 1)'
                     ],
                     borderWidth: 1
                 }]
             },
             options: {
                 plugins: {
-                    title: {
-                        display: true,
-                        text: 'Répartition des Locations'
+                    title: { display: true, text: 'Répartition des Types de Voitures' }
+                }
+            }
+        });
+
+        // Graphique en ligne : Évolution des Revenus
+        const revenueEvolutionChart = new Chart(document.getElementById('revenueEvolutionChart'), {
+            type: 'line',
+            data: {
+                labels: revenueEvolution.labels,
+                datasets: [{
+                    label: 'Revenus (€)',
+                    data: revenueEvolution.data,
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: 'Revenus (€)' }
                     }
+                },
+                plugins: {
+                    title: { display: true, text: 'Évolution des Revenus Mensuels' }
                 }
             }
         });

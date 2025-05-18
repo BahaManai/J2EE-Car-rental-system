@@ -10,7 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class ImpDaoLocation implements IDaoLocation {
     private Connection con = SingletonConnexion.getConnection();
@@ -223,5 +225,99 @@ public class ImpDaoLocation implements IDaoLocation {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    public double calculateTotalRevenue() {
+        String sql = "SELECT SUM(v.prix_par_jour * DATEDIFF(l.date_fin, l.date_debut)) as total " +
+                     "FROM location l JOIN voiture v ON l.code_voiture = v.code_voiture " +
+                     "WHERE l.statut = 'accepté'";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
+    public List<Double> getRevenuePerParc() {
+        List<Double> revenues = new ArrayList<>();
+        String sql = "SELECT p.code_parc, SUM(v.prix_par_jour * DATEDIFF(l.date_fin, l.date_debut)) as revenue " +
+                     "FROM location l JOIN voiture v ON l.code_voiture = v.code_voiture " +
+                     "JOIN parc p ON v.code_parc = p.code_parc " +
+                     "WHERE l.statut = 'accepté' GROUP BY p.code_parc ORDER BY p.code_parc";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                revenues.add(rs.getDouble("revenue"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return revenues;
+    }
+
+    public List<Double> getMonthlyRevenue() {
+        List<Double> revenues = new ArrayList<>();
+        String sql = "SELECT YEAR(l.date_debut) as year, MONTH(l.date_debut) as month, " +
+                     "SUM(v.prix_par_jour * DATEDIFF(l.date_fin, l.date_debut)) as revenue " +
+                     "FROM location l JOIN voiture v ON l.code_voiture = v.code_voiture " +
+                     "WHERE l.statut = 'accepté' AND l.date_debut >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) " +
+                     "GROUP BY YEAR(l.date_debut), MONTH(l.date_debut) ORDER BY year, month";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            // Initialize the last 6 months with 0
+            Calendar cal = Calendar.getInstance();
+            for (int i = 5; i >= 0; i--) {
+                cal.setTime(new Date());
+                cal.add(Calendar.MONTH, -i);
+                revenues.add(0.0);
+            }
+            // Fill with actual data
+            while (rs.next()) {
+                int month = rs.getInt("month");
+                int year = rs.getInt("year");
+                double revenue = rs.getDouble("revenue");
+                // Calculate the index of the month relative to the last 6 months
+                Calendar dataCal = Calendar.getInstance();
+                dataCal.set(year, month - 1, 1);
+                long monthsBetween = (cal.get(Calendar.YEAR) - dataCal.get(Calendar.YEAR)) * 12 +
+                                    (cal.get(Calendar.MONTH) - dataCal.get(Calendar.MONTH));
+                if (monthsBetween >= 0 && monthsBetween < 6) {
+                    revenues.set((int) monthsBetween, revenue);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return revenues;
+    }
+
+    public int countLocations() {
+        String sql = "SELECT COUNT(*) as count FROM location";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countActiveLocations() {
+        String sql = "SELECT COUNT(*) as count FROM location WHERE statut = 'accepté' AND date_fin > CURDATE()";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

@@ -97,7 +97,7 @@ Client client = (Client) request.getAttribute("client");
             <h1 class="h3 text-primary">
                 <i class="bi bi-people-fill"></i> Gestion des Clients
             </h1>
-            <div class="action-buttons">
+            rozpoczą    <div class="action-buttons">
                 <a href="/LocationDeVoitures/admin/listeClients" class="btn btn-primary">
                     <i class="bi bi-list-ul"></i> Liste des clients
                 </a>
@@ -120,43 +120,53 @@ Client client = (Client) request.getAttribute("client");
                     <div class="col-md-6">
                         <label for="CIN" class="form-label">CIN :</label>
                         <input readonly type="text" id="CIN" name="CIN" class="form-control" 
-                               value="<%= client.getCIN() %>" required placeholder="CIN">
+                               value="<%= client.getCIN() != null ? client.getCIN() : "" %>" required placeholder="CIN">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="nom" class="form-label">Nom :</label>
                         <input type="text" id="nom" name="nom" class="form-control" 
-                               value="<%= client.getNom() %>" required placeholder="Nom">
+                               value="<%= client.getNom() != null ? client.getNom() : "" %>" required placeholder="Nom">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="prenom" class="form-label">Prénom :</label>
                         <input type="text" id="prenom" name="prenom" class="form-control" 
-                               value="<%= client.getPrenom() %>" required placeholder="Prénom">
+                               value="<%= client.getPrenom() != null ? client.getPrenom() : "" %>" required placeholder="Prénom">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="email" class="form-label">Email :</label>
                         <input type="email" id="email" name="email" class="form-control" 
-                               value="<%= client.getEmail() %>" required placeholder="yourname@example.com">
+                               value="<%= client.getEmail() != null ? client.getEmail() : "" %>" required placeholder="yourname@example.com">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="tel" class="form-label">Téléphone :</label>
                         <input type="tel" id="tel" name="tel" class="form-control" 
-                               value="<%= client.getTel() %>" required placeholder="Téléphone">
+                               value="<%= client.getTel() != null ? client.getTel() : "" %>" required placeholder="Téléphone">
                     </div>
                     
                     <div class="col-md-6">
                         <label for="age" class="form-label">Âge :</label>
                         <input type="number" id="age" name="age" class="form-control" 
-                               value="<%= client.getAge() %>" required min="18" max="99" placeholder="Age">
+                               value="<%= client.getAge() != 0 ? client.getAge() : "" %>" required min="18" max="99" placeholder="Age">
                     </div>
                     
                     <div class="col-12">
                         <label for="adresse" class="form-label">Adresse :</label>
                         <input type="text" id="adresse" name="adresse" class="form-control" 
-                               value="<%= client.getAdresse() %>" required placeholder="Adresse">
+                               value="<%= client.getAdresse() != null ? client.getAdresse() : "" %>" required placeholder="Adresse">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="password" class="form-label">Nouveau mot de passe (facultatif) :</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Nouveau mot de passe">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="passwordConfirmation" class="form-label">Confirmation du mot de passe :</label>
+                        <input type="password" id="passwordConfirmation" name="passwordConfirmation" class="form-control" placeholder="Confirmer le mot de passe">
                     </div>
                     
                     <div class="col-12 mt-4">
@@ -174,6 +184,8 @@ Client client = (Client) request.getAttribute("client");
         document.getElementById('modification').addEventListener('submit', function(e) {
             const tel = document.getElementById('tel').value;
             const age = document.getElementById('age').value;
+            const password = document.getElementById('password').value;
+            const passwordConfirmation = document.getElementById('passwordConfirmation').value;
             
             if (!/^[0-9]{8}$/.test(tel)) {
                 alert('Veuillez entrer un numéro de téléphone valide (8 chiffres)');
@@ -185,6 +197,19 @@ Client client = (Client) request.getAttribute("client");
                 alert('L\'âge doit être compris entre 18 et 99 ans');
                 e.preventDefault();
                 return;
+            }
+            
+            if (password || passwordConfirmation) {
+                if (password.length < 6) {
+                    alert('Le mot de passe doit contenir au moins 6 caractères');
+                    e.preventDefault();
+                    return;
+                }
+                if (password !== passwordConfirmation) {
+                    alert('Les mots de passe ne correspondent pas');
+                    e.preventDefault();
+                    return;
+                }
             }
         });
     </script>

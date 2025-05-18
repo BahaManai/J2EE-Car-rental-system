@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 import dao.ImpDaoParc;
 import entities.Parc;
 
@@ -47,7 +48,12 @@ public class ModelParc {
     public Parc getParcById(int codeParc) {
         return daoParc.getParcById(codeParc);
     }
+
     public int countParcs() {
-        return getAllParcs().size(); // Or use a direct SQL query via DAO
+        return daoParc.countParcs(); // Utiliser une requête SQL directe
+    }
+
+    public List<String> getParcNames() {
+        return daoParc.getParcNames(); // Liste des noms des parcs
     }
 }

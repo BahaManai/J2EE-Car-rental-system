@@ -86,7 +86,7 @@
         }
 
         .car-image {
-            width: 50px;
+            width: 70px;
             height: 50px;
             object-fit: cover;
             border-radius: 4px;
@@ -125,12 +125,12 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Matricule</th>
+                        	<th>Image</th>
                             <th>Modèle</th>
+                            <th>Matricule</th>
                             <th>Kilométrage</th>
                             <th>Prix/Jour</th>
-                            <th>Image</th>
-                            <th>Code Parc</th>
+                            <th>Parc</th>
                             <th style="text-align:center">Actions</th>
                         </tr>
                     </thead>
@@ -141,18 +141,18 @@
                             for (Voiture v : l) {
                         %>
                         <tr>
-                            <td><%= v.getMatricule() %></td>
-                            <td><%= v.getModel() %></td>
-                            <td><%= String.format("%.1f", v.getKilometrage()) %> km</td>
-                            <td><%= String.format("%.2f", v.getPrixParJour()) %> DT</td>
-                            <td>
+                        	<td>
                                 <% if (v.getImage() != null && !v.getImage().isEmpty()) { %>
                                     <img src="<%= v.getImage() %>" alt="<%= v.getModel() %>" class="car-image">
                                 <% } else { %>
                                     Aucune image
                                 <% } %>
                             </td>
-                            <td><%= v.getParc() != null ? v.getParc().getCodeParc() : "-" %></td>
+                            <td><%= v.getModel() %></td>
+                            <td><%= v.getMatricule() %></td>
+                            <td><%= String.format("%.1f", v.getKilometrage()) %> km</td>
+                            <td><%= String.format("%.2f", v.getPrixParJour()) %> DT</td>
+                            <td><%= v.getParc() != null ? v.getParc().getNomParc() : "-" %></td>
                             <td>
                                 <div class="action-buttons">
                                     <a href="/LocationDeVoitures/admin/formModifierVoiture?id=<%= v.getCodeVoiture() %>" class="btn btn-warning btn-sm">

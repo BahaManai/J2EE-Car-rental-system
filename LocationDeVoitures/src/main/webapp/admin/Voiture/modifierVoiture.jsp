@@ -125,7 +125,7 @@ String error = request.getParameter("error");
                     </div>
 
                     <div class="col-md-6">
-                        <label for="prix_par_jour" class="form-label">Prix par jour ($) :</label>
+                        <label for="prix_par_jour" class="form-label">Prix par jour (DT) :</label>
                         <input type="number" id="prix_par_jour" name="prix_par_jour" step="0.01" min="0" class="form-control" 
                                value="<%= String.format("%.2f", voiture.getPrixParJour()) %>" required>
                     </div>
@@ -133,7 +133,7 @@ String error = request.getParameter("error");
                     <div class="col-md-6">
                         <label for="image" class="form-label">Image (URL) :</label>
                         <input type="text" id="image" name="image" class="form-control" 
-                               value="<%= voiture.getImage() != null ? voiture.getImage() : "" %>" placeholder="Ex : /images/cars/model.jpg">
+                               value="<%= voiture.getImage() != null ? voiture.getImage() : "" %>" placeholder="Ex : https://photos/image.png">
                     </div>
 
                     <div class="col-md-6">

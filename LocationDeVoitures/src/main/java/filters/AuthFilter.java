@@ -45,7 +45,7 @@ public class AuthFilter implements Filter {
 
         // Restrict /client to client role
         if (path.startsWith("/client") && !"client".equals(role)) {
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/admin/dashbord.jsp");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/admin/dashboard");
             return;
         }
 

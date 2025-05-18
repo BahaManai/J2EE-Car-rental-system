@@ -61,7 +61,9 @@ public class ImpDaoVoiture implements IDaoVoiture {
     @Override
     public ArrayList<Voiture> listeVoitures() {
         ArrayList<Voiture> list = new ArrayList<>();
-        String sql = "SELECT * FROM voiture";
+        String sql = "SELECT v.code_voiture, v.matricule, v.model, v.kilometrage, v.prix_par_jour, v.image,\r\n"
+        		+ "       p.code_parc, p.nom_parc\r\n"
+        		+ "FROM voiture v LEFT JOIN parc p ON v.code_parc = p.code_parc";
         try (PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -76,6 +78,7 @@ public class ImpDaoVoiture implements IDaoVoiture {
 
                 Parc p = new Parc();
                 p.setCodeParc(rs.getInt("code_parc"));
+                p.setNomParc(rs.getString("nom_parc"));
                 v.setParc(p);
 
                 list.add(v);
@@ -88,7 +91,11 @@ public class ImpDaoVoiture implements IDaoVoiture {
 
     @Override
     public Voiture getVoitureById(int codeVoiture) {
-        String sql = "SELECT * FROM voiture WHERE code_voiture = ?";
+        String sql = "SELECT v.code_voiture, v.matricule, v.model, v.kilometrage, v.prix_par_jour, v.image, " +
+                    "p.code_parc, p.nom_parc " +
+                    "FROM voiture v LEFT JOIN parc p ON v.code_parc = p.code_parc " +
+                    "WHERE v.code_voiture = ?";
+        System.out.println("Executing getVoitureById query for code_voiture: " + codeVoiture);
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, codeVoiture);
             ResultSet rs = ps.executeQuery();
@@ -103,13 +110,73 @@ public class ImpDaoVoiture implements IDaoVoiture {
 
                 Parc p = new Parc();
                 p.setCodeParc(rs.getInt("code_parc"));
+                p.setNomParc(rs.getString("nom_parc"));
                 v.setParc(p);
 
+                System.out.println("Found voiture: code_voiture=" + v.getCodeVoiture() + ", matricule=" + v.getMatricule());
                 return v;
+            } else {
+                System.out.println("No voiture found with code_voiture: " + codeVoiture);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching voiture by ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public double calculateOccupancyRate() {
+        String sql = "SELECT (COUNT(DISTINCT l.code_voiture) / (SELECT COUNT(*) FROM voiture) * 100) as rate " +
+                    "FROM location l " +
+                    "WHERE l.statut = 'accepté' AND l.date_fin > CURDATE()";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble("rate");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return 0.0;
+    }
+
+    public List<String> getCarTypeLabels() {
+        List<String> labels = new ArrayList<>();
+        String sql = "SELECT DISTINCT model FROM voiture";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                labels.add(rs.getString("model"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return labels;
+    }
+
+    public List<Integer> getCarTypeCounts() {
+        List<Integer> counts = new ArrayList<>();
+        String sql = "SELECT model, COUNT(*) as count FROM voiture GROUP BY model";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                counts.add(rs.getInt("count"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return counts;
+    }
+
+    public int countVoitures() {
+        String sql = "SELECT COUNT(*) as count FROM voiture";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
