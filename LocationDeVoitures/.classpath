@@ -16,5 +16,8 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gson-2.8.9.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/mysql-connector-j-8.0.32.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/taglibs-standard-impl-1.2.5.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/hibernate-core-6.5.2.Final.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/slf4j-api-2.0.13.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/slf4j-simple-2.0.13.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
