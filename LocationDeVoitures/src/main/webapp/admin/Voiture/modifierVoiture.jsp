@@ -103,7 +103,7 @@ String error = request.getParameter("error");
                 </h2>
             </div>
             <div class="card-body" style="padding:20px">
-                <form id="modification" action="/LocationDeVoitures/admin/updateVoiture" method="post" class="row g-3">
+                <form id="modification" action="/LocationDeVoitures/admin/updateVoiture" method="post" enctype="multipart/form-data" class="row g-3">
                     <input type="hidden" name="codevoiture" value="<%= voiture.getCodeVoiture() %>">
 
                     <div class="col-md-6">
@@ -131,9 +131,14 @@ String error = request.getParameter("error");
                     </div>
 
                     <div class="col-md-6">
-                        <label for="image" class="form-label">Image (URL) :</label>
-                        <input type="text" id="image" name="image" class="form-control" 
-                               value="<%= voiture.getImage() != null ? voiture.getImage() : "" %>" placeholder="Ex : https://photos/image.png">
+                        <label for="image" class="form-label">Image :</label>
+                        <% if (voiture.getImage() != null && !voiture.getImage().isEmpty()) { %>
+                            <div class="mb-2">
+                                <img src="/LocationDeVoitures/<%= voiture.getImage() %>" alt="Image actuelle" class="img-thumbnail" style="max-width: 200px;">
+                            </div>
+                        <% } %>
+                        <input type="file" id="image" name="image" class="form-control" accept="image/*">
+                        <small class="text-muted">Formats acceptés : JPG, PNG, GIF. Taille maximale : 5MB</small>
                     </div>
 
                     <div class="col-md-6">

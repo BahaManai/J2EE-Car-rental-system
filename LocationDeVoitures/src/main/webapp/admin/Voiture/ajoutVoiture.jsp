@@ -96,7 +96,13 @@ String error = request.getParameter("error");
         <% if (error != null) { %>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="bi bi-exclamation-triangle"></i>
-                <%= error.equals("invalid_price") ? "Le prix par jour doit être non négatif." : "Entrée invalide. Veuillez vérifier les champs." %>
+                <% if (error.equals("invalid_price")) { %>
+                    Le prix par jour doit être non négatif.
+                <% } else if (error.equals("missing_fields")) { %>
+                    Tous les champs obligatoires doivent être remplis.
+                <% } else { %>
+                    Entrée invalide. Veuillez vérifier les champs.
+                <% } %>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <% } %>
@@ -109,7 +115,7 @@ String error = request.getParameter("error");
                 </h2>
             </div>
             <div class="card-body" style="padding:20px">
-                <form id="ajoutVoiture" action="/LocationDeVoitures/admin/ajoutVoiture" method="post" class="row g-3">
+                <form id="ajoutVoiture" action="/LocationDeVoitures/admin/ajoutVoiture" method="post" enctype="multipart/form-data" class="row g-3">
                     <div class="col-md-6">
                         <label for="matricule" class="form-label">Matricule :</label>
                         <input type="text" id="matricule" name="matricule" class="form-control" required placeholder="Matricule">
@@ -131,8 +137,9 @@ String error = request.getParameter("error");
                     </div>
 
                     <div class="col-md-6">
-                        <label for="image" class="form-label">Image (URL) :</label>
-                        <input type="text" id="image" name="image" class="form-control" placeholder="Ex : https://photos/image.png">
+                        <label for="image" class="form-label">Image :</label>
+                        <input type="file" id="image" name="image" class="form-control" accept="image/*">
+                        <small class="text-muted">Formats acceptés : JPG, PNG, GIF. Taille maximale : 5MB</small>
                     </div>
 
                     <div class="col-md-6">
