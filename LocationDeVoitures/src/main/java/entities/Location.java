@@ -1,17 +1,38 @@
 package entities;
 
+import jakarta.persistence.*;
 import java.util.Date;
 
+@Entity
+@Table(name = "location")
 public class Location {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "code_location")
     private int codeLocation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "code_voiture")
     private Voiture voiture;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "code_client")
     private Client client;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "date_debut")
     private Date dateDeb;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "date_fin")
     private Date dateFin;
-    private String statut; // "en attente", "accepté", "refusé"
+
+    @Column(name = "statut")
+    private String statut;
 
     public Location() {
-        this.statut = "en attente"; // Default status
+        this.statut = "en attente"; // Valeur par défaut
     }
 
     public Location(int codeLocation, Voiture voiture, Client client, Date dateDeb, Date dateFin, String statut) {
@@ -20,7 +41,7 @@ public class Location {
         this.client = client;
         this.dateDeb = dateDeb;
         this.dateFin = dateFin;
-        this.statut = statut != null ? statut : "en attente"; // Default to "en attente" if null
+        this.statut = (statut != null) ? statut : "en attente";
     }
 
     public int getCodeLocation() {

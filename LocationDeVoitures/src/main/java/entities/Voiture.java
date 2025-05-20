@@ -1,12 +1,31 @@
 package entities;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "voiture")
 public class Voiture {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int codevoiture;
+
+    @Column(nullable = false)
     private String matricule;
+
+    @Column
     private String model;
+
+    @Column
     private float kilometrage;
+
+    @Column(name = "prix_par_jour", nullable = false)
     private float prixParJour;
+
+    @Column
     private String image;
+
+    @ManyToOne
+    @JoinColumn(name = "code_parc")
     private Parc parc;
 
     public Voiture() {}

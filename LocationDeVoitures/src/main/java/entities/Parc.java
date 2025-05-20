@@ -1,18 +1,32 @@
 package entities;
 
+import jakarta.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
+@Entity
+@Table(name = "parc")
 public class Parc {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int codeParc;
-    private String nomParc;
-    private String libelle;
-    private int capacite;
-    private int nbVoitures;
-    private ArrayList<Voiture> listVoitures;
 
-    public Parc() {
-        this.listVoitures = new ArrayList<Voiture>();
-    }
+    @Column(name = "nom_parc", nullable = false)
+    private String nomParc;
+
+    @Column
+    private String libelle;
+
+    @Column
+    private int capacite;
+
+    @Column(name = "nb_voitures")
+    private int nbVoitures;
+
+    @OneToMany(mappedBy = "parc", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Voiture> listVoitures = new ArrayList<>();
+
+    public Parc() {}
 
     public Parc(int codeParc, String nomParc, String libelle, int capacite) {
         this.codeParc = codeParc;
@@ -20,7 +34,6 @@ public class Parc {
         this.libelle = libelle;
         this.capacite = capacite;
         this.nbVoitures = 0;
-        this.listVoitures = new ArrayList<Voiture>();
     }
 
     public int getCodeParc() {
@@ -63,11 +76,11 @@ public class Parc {
         this.nbVoitures = nbVoitures;
     }
 
-    public ArrayList<Voiture> getListVoitures() {
+    public List<Voiture> getListVoitures() {
         return listVoitures;
     }
 
-    public void setListVoitures(ArrayList<Voiture> listVoitures) {
+    public void setListVoitures(List<Voiture> listVoitures) {
         this.listVoitures = listVoitures;
     }
 }
