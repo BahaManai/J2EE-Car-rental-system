@@ -179,4 +179,24 @@ public class ImpDaoVoiture implements IDaoVoiture {
         }
         return 0;
     }
+    
+    @Override
+    public List<Object[]> getMostReservedCars() {
+        List<Object[]> result = new ArrayList<>();
+        String sql = "SELECT v.model, COUNT(l.code_location) as reservation_count " +
+                     "FROM location l " +
+                     "JOIN voiture v ON l.code_voiture = v.code_voiture " +
+                     "WHERE l.statut = 'accepté' " +
+                     "GROUP BY v.code_voiture, v.model " +
+                     "ORDER BY reservation_count DESC LIMIT 5";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                result.add(new Object[]{rs.getString(1), rs.getInt("reservation_count")});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

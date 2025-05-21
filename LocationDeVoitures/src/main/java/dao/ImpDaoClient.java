@@ -15,7 +15,7 @@ public class ImpDaoClient implements IDaoClient {
 
     @Override
     public void ajouterClient(Client client) {
-        String sql = "INSERT INTO client (code_client, CIN, nom, prenom, adresse, email, tel, age, mot_de_passe) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO client (code_client, CIN, nom, prenom, adresse, email, tel, age, mot_de_passe, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, client.getCodeClient());
@@ -27,6 +27,7 @@ public class ImpDaoClient implements IDaoClient {
             ps.setString(7, client.getTel());
             ps.setInt(8, client.getAge());
             ps.setString(9, client.getMotDePasse());
+            ps.setString(10, "client");
 
             ps.executeUpdate();
             System.out.println("Client ajouté avec succès.");

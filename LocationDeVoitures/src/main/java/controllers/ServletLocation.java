@@ -17,9 +17,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-/**
- * Servlet implementation class ServletLocation
- */
 @WebServlet(urlPatterns = {
     "/admin/listeLocations", "/admin/formAjoutLocation", "/admin/ajoutLocation",
     "/admin/formModifierLocation", "/admin/updateLocation", "/admin/deleteLocation",
@@ -32,16 +29,10 @@ public class ServletLocation extends HttpServlet {
     private ModelClient modelClient = new ModelClient();
     private ModelVoiture modelVoiture = new ModelVoiture();
 
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public ServletLocation() {
         super();
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getServletPath();
         switch (path) {
@@ -85,7 +76,6 @@ public class ServletLocation extends HttpServlet {
         HttpSession session = request.getSession();
         Integer userId = (Integer) session.getAttribute("userId");
 
-        // Set authentication status for JSP
         request.setAttribute("isAuthenticated", userId != null);
 
         List<Voiture> voitures = modelVoiture.listeVoitures();
@@ -95,7 +85,6 @@ public class ServletLocation extends HttpServlet {
     }
 
     private void ajouterLocation(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int codeLocation = Integer.parseInt(request.getParameter("codeLocation"));
         int codeClient = Integer.parseInt(request.getParameter("codeClient"));
         int codeVoiture = Integer.parseInt(request.getParameter("codeVoiture"));
         String dateDebStr = request.getParameter("dateDeb");
@@ -120,8 +109,14 @@ public class ServletLocation extends HttpServlet {
                 return;
             }
 
+            // Check car availability
+            if (!modelLocation.estVoitureDisponible(codeVoiture, dateDeb, dateFin)) {
+                response.sendRedirect(request.getContextPath() + "/admin/formAjoutLocation?error=voiture_unavailable");
+                return;
+            }
+
             // Admin-added locations are assumed to be accepted
-            Location location = new Location(codeLocation, voiture, client, dateDeb, dateFin, "accepté");
+            Location location = new Location(0, voiture, client, dateDeb, dateFin, "accepté");
             modelLocation.setLocation(location);
             modelLocation.ajouterLocation();
 
@@ -145,7 +140,6 @@ public class ServletLocation extends HttpServlet {
         String dateDebStr = request.getParameter("dateDeb");
         String dateFinStr = request.getParameter("dateFin");
 
-        // Validate required parameters
         if (codeVoitureStr == null || codeVoitureStr.trim().isEmpty() ||
             dateDebStr == null || dateDebStr.trim().isEmpty() ||
             dateFinStr == null || dateFinStr.trim().isEmpty()) {
@@ -159,7 +153,6 @@ public class ServletLocation extends HttpServlet {
             java.util.Date dateDeb = sdf.parse(dateDebStr);
             java.util.Date dateFin = sdf.parse(dateFinStr);
 
-            // Validate dates
             if (dateDeb.after(dateFin) || dateDeb.before(new java.util.Date())) {
                 response.sendRedirect(request.getContextPath() + "/client/home?error=invalid_dates");
                 return;
@@ -173,13 +166,11 @@ public class ServletLocation extends HttpServlet {
                 return;
             }
 
-            // Check car availability
             if (!modelLocation.estVoitureDisponible(codeVoiture, dateDeb, dateFin)) {
                 response.sendRedirect(request.getContextPath() + "/client/home?error=voiture_unavailable");
                 return;
             }
 
-            // Client requests start as "en attente"
             Location location = new Location(0, voiture, client, dateDeb, dateFin, "en attente");
             modelLocation.setLocation(location);
             modelLocation.ajouterLocation();
@@ -227,6 +218,14 @@ public class ServletLocation extends HttpServlet {
                 return;
             }
 
+            // Check car availability if statut is not refusé
+            if (!"refusé".equals(statut)) {
+                if (!modelLocation.estVoitureDisponible(codeVoiture, dateDeb, dateFin)) {
+                    response.sendRedirect(request.getContextPath() + "/admin/formModifierLocation?error=voiture_unavailable");
+                    return;
+                }
+            }
+
             Location location = new Location(codeLocation, voiture, client, dateDeb, dateFin, statut);
             modelLocation.setLocation(location);
             modelLocation.modifierLocation();
@@ -242,13 +241,11 @@ public class ServletLocation extends HttpServlet {
         int codeLocation = Integer.parseInt(request.getParameter("codeLocation"));
         String statut = request.getParameter("statut");
 
-        // Validate statut
         if (!"accepté".equals(statut) && !"refusé".equals(statut)) {
             response.sendRedirect(request.getContextPath() + "/admin/listeLocations?error=invalid_statut");
             return;
         }
 
-        // Check availability if accepting
         if ("accepté".equals(statut)) {
             Location location = modelLocation.getLocationById(codeLocation);
             if (location != null && !modelLocation.estVoitureDisponible(
@@ -295,13 +292,11 @@ public class ServletLocation extends HttpServlet {
                 return;
             }
 
-            // Verify the reservation belongs to the logged-in client
             if (location.getClient().getCodeClient() != userId) {
                 response.sendRedirect(request.getContextPath() + "/client/listeReservations?error=unauthorized");
                 return;
             }
 
-            // Only allow cancellation if status is "en attente" or "accepté"
             if (!"en attente".equals(location.getStatut()) && !"accepté".equals(location.getStatut())) {
                 response.sendRedirect(request.getContextPath() + "/client/listeReservations?error=cannot_cancel");
                 return;
@@ -369,9 +364,6 @@ public class ServletLocation extends HttpServlet {
         request.getRequestDispatcher("/adminLayout.jsp").forward(request, response);
     }
 
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }

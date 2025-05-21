@@ -11,13 +11,11 @@ import model.ModelParc;
 import model.ModelVoiture;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import entities.Client;
 
-/**
- * Servlet implementation class ServletClient
- */
 @WebServlet(urlPatterns = {
     "/admin/ajoutClient", "/admin/updateClient", "/admin/deleteClient",
     "/admin/listeClients", "/admin/formModifierClient", "/admin/formAjoutClient", "/admin/dashboard"
@@ -62,7 +60,6 @@ public class ServletClient extends HttpServlet {
     }
 
     private void ajouterClient(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        // Retrieve form parameters
         String nom = request.getParameter("nom");
         String prenom = request.getParameter("prenom");
         String cin = request.getParameter("CIN");
@@ -73,7 +70,6 @@ public class ServletClient extends HttpServlet {
         String passwordConfirmation = request.getParameter("passwordConfirmation");
         int age;
         
-        // Validate required fields
         if (nom == null || prenom == null || cin == null || adresse == null || 
             email == null || tel == null || request.getParameter("age") == null ||
             password == null || passwordConfirmation == null) {
@@ -81,7 +77,6 @@ public class ServletClient extends HttpServlet {
             return;
         }
 
-        // Parse age with validation
         try {
             age = Integer.parseInt(request.getParameter("age"));
             if (age < 18 || age > 99) {
@@ -93,13 +88,11 @@ public class ServletClient extends HttpServlet {
             return;
         }
 
-        // Validate telephone format (8 digits)
         if (!tel.matches("^[0-9]{8}$")) {
             response.sendRedirect(request.getContextPath() + "/admin/formAjoutClient?error=invalid_tel");
             return;
         }
 
-        // Validate password
         if (password.length() < 6) {
             response.sendRedirect(request.getContextPath() + "/admin/formAjoutClient?error=short_password");
             return;
@@ -109,13 +102,8 @@ public class ServletClient extends HttpServlet {
             return;
         }
 
-        // Create and save client
         Client client = new Client(0, cin, nom, prenom, adresse, email, tel, age);
-        client.setMotDePasse(password); // Set password
-        // Optional: Add BCrypt hashing here
-        // import org.mindrot.jbcrypt.BCrypt;
-        // client.setMotDePasse(BCrypt.hashpw(password, BCrypt.gensalt()));
-
+        client.setMotDePasse(password);
         modelClient.setClient(client);
         modelClient.ajouterClient();
 
@@ -123,7 +111,6 @@ public class ServletClient extends HttpServlet {
     }
 
     private void modifierClient(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        // Retrieve form parameters
         String codeClientParam = request.getParameter("codeClient");
         String nom = request.getParameter("nom");
         String prenom = request.getParameter("prenom");
@@ -136,7 +123,6 @@ public class ServletClient extends HttpServlet {
         int codeClient;
         int age;
 
-        // Validate required fields
         if (codeClientParam == null || nom == null || prenom == null || cin == null || 
             adresse == null || email == null || tel == null || request.getParameter("age") == null) {
             response.sendRedirect(request.getContextPath() + "/admin/formModifierClient?id=" + 
@@ -144,7 +130,6 @@ public class ServletClient extends HttpServlet {
             return;
         }
 
-        // Parse codeClient
         try {
             codeClient = Integer.parseInt(codeClientParam);
         } catch (NumberFormatException e) {
@@ -152,7 +137,6 @@ public class ServletClient extends HttpServlet {
             return;
         }
 
-        // Parse age with validation
         try {
             age = Integer.parseInt(request.getParameter("age"));
             if (age < 18 || age > 99) {
@@ -166,14 +150,12 @@ public class ServletClient extends HttpServlet {
             return;
         }
 
-        // Validate telephone format (8 digits)
         if (!tel.matches("^[0-9]{8}$")) {
             response.sendRedirect(request.getContextPath() + "/admin/formModifierClient?id=" + 
                 codeClient + "&error=invalid_tel");
             return;
         }
 
-        // Validate password if provided
         if (password != null && !password.isEmpty()) {
             if (password.length() < 6) {
                 response.sendRedirect(request.getContextPath() + "/admin/formModifierClient?id=" + 
@@ -187,12 +169,9 @@ public class ServletClient extends HttpServlet {
             }
         }
 
-        // Create and update client
         Client client = new Client(codeClient, cin, nom, prenom, adresse, email, tel, age);
         if (password != null && !password.isEmpty()) {
-            client.setMotDePasse(password); // Set password only if provided
-            // Optional: Add BCrypt hashing here
-            // client.setMotDePasse(BCrypt.hashpw(password, BCrypt.gensalt()));
+            client.setMotDePasse(password);
         }
 
         modelClient.setClient(client);
@@ -224,17 +203,24 @@ public class ServletClient extends HttpServlet {
         int clientCount = modelClient.countClients();
         int locationCount = modelLocation.countLocations();
         int activeLocations = modelLocation.countActiveLocations();
-        double totalRevenue = modelLocation.calculateTotalRevenue(); // Nouvelle méthode à créer
+        double totalRevenue = modelLocation.calculateTotalRevenue();
         int voitureCount = modelVoiture.countVoitures();
-        double occupancyRate = modelVoiture.calculateOccupancyRate(); // Nouvelle méthode à créer (en %)
+        double occupancyRate = modelVoiture.calculateOccupancyRate();
 
         // Données pour les graphiques
-        List<String> parcNames = modelParc.getParcNames(); // Nouvelle méthode à créer
-        List<Double> revenuePerParc = modelLocation.getRevenuePerParc(); // Nouvelle méthode à créer
-        List<String> carTypeLabels = modelVoiture.getCarTypeLabels(); // Nouvelle méthode à créer
-        List<Integer> carTypeData = modelVoiture.getCarTypeCounts(); // Nouvelle méthode à créer
-        List<String> revenueMonths = modelLocation.getRevenueMonths(); // Nouvelle méthode à créer
-        List<Double> revenueEvolutionData = modelLocation.getMonthlyRevenue(); // Nouvelle méthode à créer
+        List<String> parcNames = modelParc.getParcNames();
+        List<Double> revenuePerParc = modelLocation.getRevenuePerParc();
+        List<String> revenueMonths = modelLocation.getRevenueMonths();
+        List<Double> revenueEvolutionData = modelLocation.getMonthlyRevenue();
+
+        // Données pour le graphique des voitures les plus réservées
+        List<Object[]> mostReservedCars = modelVoiture.getMostReservedCars();
+        List<String> mostReservedCarLabels = new ArrayList<>();
+        List<Integer> mostReservedCarCounts = new ArrayList<>();
+        for (Object[] car : mostReservedCars) {
+            mostReservedCarLabels.add((String) car[0]);
+            mostReservedCarCounts.add((Integer) car[1]);
+        }
 
         // Définir les attributs de la requête
         request.setAttribute("clientCount", clientCount);
@@ -243,8 +229,8 @@ public class ServletClient extends HttpServlet {
         request.setAttribute("occupancyRate", String.format("%.1f", occupancyRate));
         request.setAttribute("parcNames", new Gson().toJson(parcNames));
         request.setAttribute("revenuePerParc", new Gson().toJson(revenuePerParc));
-        request.setAttribute("carTypeLabels", new Gson().toJson(carTypeLabels));
-        request.setAttribute("carTypeData", new Gson().toJson(carTypeData));
+        request.setAttribute("mostReservedCarLabels", new Gson().toJson(mostReservedCarLabels));
+        request.setAttribute("mostReservedCarCounts", new Gson().toJson(mostReservedCarCounts));
         request.setAttribute("revenueMonths", new Gson().toJson(revenueMonths));
         request.setAttribute("revenueEvolutionData", new Gson().toJson(revenueEvolutionData));
 

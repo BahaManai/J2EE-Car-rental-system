@@ -100,7 +100,9 @@ String error = request.getParameter("error");
                 <%= error.equals("invalid_dates") ? "Les dates sont invalides." :
                     error.equals("invalid_client_or_voiture") ? "Client ou voiture invalide." :
                     error.equals("date_format") ? "Format de date invalide." :
-                    error.equals("missing_parameters") ? "Tous les champs sont requis." : "Erreur inconnue." %>
+                    error.equals("missing_parameters") ? "Tous les champs sont requis." :
+                    error.equals("voiture_unavailable") ? "La voiture n'est pas disponible pour ces dates." : 
+                    "Erreur inconnue." %>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <% } %>
@@ -114,11 +116,6 @@ String error = request.getParameter("error");
             </div>
             <div class="card-body" style="padding:20px">
                 <form id="ajoutLocation" action="/LocationDeVoitures/admin/ajoutLocation" method="post" class="row g-3">
-                    <div class="col-md-6">
-                        <label for="codeLocation" class="form-label">Code Location :</label>
-                        <input type="number" id="codeLocation" name="codeLocation" class="form-control" required placeholder="Code Location">
-                    </div>
-
                     <div class="col-md-6">
                         <label for="codeClient" class="form-label">Client :</label>
                         <select id="codeClient" name="codeClient" class="form-control" required>
@@ -135,7 +132,7 @@ String error = request.getParameter("error");
                             <option value="">-- Sélectionnez une voiture --</option>
                             <% for (Voiture voiture : voitures) { %>
                                 <option value="<%= voiture.getCodeVoiture() %>">
-                                    <%= voiture.getModel() %> ($<%= String.format("%.2f", voiture.getPrixParJour()) %>/day)
+                                    <%= voiture.getModel() %> (<%= String.format("%.2f", voiture.getPrixParJour()) %> DT/day)
                                 </option>
                             <% } %>
                         </select>

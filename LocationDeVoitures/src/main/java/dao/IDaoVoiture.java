@@ -9,4 +9,5 @@ public interface IDaoVoiture {
     void supprimerVoiture(int codeVoiture);
     List<Voiture> listeVoitures();
     Voiture getVoitureById(int codeVoiture);
+    List<Object[]> getMostReservedCars();
 }

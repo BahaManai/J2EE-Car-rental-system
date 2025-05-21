@@ -64,4 +64,8 @@ public class ModelVoiture {
     public List<Integer> getCarTypeCounts() {
         return daoVoiture.getCarTypeCounts(); // Nombre de voitures par catégorie
     }
+    
+    public List<Object[]> getMostReservedCars() {
+        return daoVoiture.getMostReservedCars();
+    }
 }

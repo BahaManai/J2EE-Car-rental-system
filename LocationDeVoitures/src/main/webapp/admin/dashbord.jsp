@@ -132,12 +132,12 @@
                 <div class="admin-card">
                     <div class="card-header">
                         <h2 class="h4 mb-0">
-                            <i class="bi bi-pie-chart"></i> Types de Voitures
+                            <i class="bi bi-pie-chart"></i> Voitures les Plus Réservées
                         </h2>
                     </div>
                     <div class="card-body">
                         <div class="chart-container">
-                            <canvas id="carTypeChart"></canvas>
+                            <canvas id="mostReservedCarChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -169,9 +169,9 @@
             data: <%= request.getAttribute("revenuePerParc") != null ? request.getAttribute("revenuePerParc") : "[15000, 22000, 9000]" %>
         };
 
-        const carTypes = {
-            labels: <%= request.getAttribute("carTypeLabels") != null ? request.getAttribute("carTypeLabels") : "['Compactes', 'SUV', 'Luxe']" %>,
-            data: <%= request.getAttribute("carTypeData") != null ? request.getAttribute("carTypeData") : "[20, 15, 10]" %>
+        const mostReservedCars = {
+            labels: <%= request.getAttribute("mostReservedCarLabels") != null ? request.getAttribute("mostReservedCarLabels") : "['Volkswagen Golf 8', 'Hyundai i20', 'Peugeot 208']" %>,
+            data: <%= request.getAttribute("mostReservedCarCounts") != null ? request.getAttribute("mostReservedCarCounts") : "[10, 8, 5]" %>
         };
 
         const revenueEvolution = {
@@ -185,7 +185,7 @@
             data: {
                 labels: revenuePerParc.labels,
                 datasets: [{
-                    label: 'Revenus (€)',
+                    label: 'Revenus (DT)',
                     data: revenuePerParc.data,
                     backgroundColor: 'rgba(52, 152, 219, 0.6)',
                     borderColor: 'rgba(52, 152, 219, 1)',
@@ -196,7 +196,7 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        title: { display: true, text: 'Revenus (€)' }
+                        title: { display: true, text: 'Revenus (DT)' }
                     }
                 },
                 plugins: {
@@ -206,29 +206,33 @@
             }
         });
 
-        // Graphique circulaire : Types de Voitures
-        const carTypeChart = new Chart(document.getElementById('carTypeChart'), {
+        // Graphique circulaire : Voitures les Plus Réservées
+        const mostReservedCarChart = new Chart(document.getElementById('mostReservedCarChart'), {
             type: 'pie',
             data: {
-                labels: carTypes.labels,
+                labels: mostReservedCars.labels,
                 datasets: [{
-                    data: carTypes.data,
+                    data: mostReservedCars.data,
                     backgroundColor: [
                         'rgba(52, 152, 219, 0.6)',
                         'rgba(46, 204, 113, 0.6)',
-                        'rgba(241, 196, 15, 0.6)'
+                        'rgba(241, 196, 15, 0.6)',
+                        'rgba(231, 76, 60, 0.6)',
+                        'rgba(155, 89, 182, 0.6)'
                     ],
                     borderColor: [
                         'rgba(52, 152, 219, 1)',
                         'rgba(46, 204, 113, 1)',
-                        'rgba(241, 196, 15, 1)'
+                        'rgba(241, 196, 15, 1)',
+                        'rgba(231, 76, 60, 1)',
+                        'rgba(155, 89, 182, 1)'
                     ],
                     borderWidth: 1
                 }]
             },
             options: {
                 plugins: {
-                    title: { display: true, text: 'Répartition des Types de Voitures' }
+                    title: { display: true, text: 'Voitures les Plus Réservées' }
                 }
             }
         });
@@ -239,7 +243,7 @@
             data: {
                 labels: revenueEvolution.labels,
                 datasets: [{
-                    label: 'Revenus (€)',
+                    label: 'Revenus (DT)',
                     data: revenueEvolution.data,
                     backgroundColor: 'rgba(52, 152, 219, 0.2)',
                     borderColor: 'rgba(52, 152, 219, 1)',
@@ -251,7 +255,7 @@
                 scales: {
                     y: { 
                         beginAtZero: true, 
-                        title: { display: true, text: 'Revenus (€)' }
+                        title: { display: true, text: 'Revenus (DT)' }
                     }
                 },
                 plugins: {
