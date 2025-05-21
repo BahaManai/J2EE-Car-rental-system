@@ -81,6 +81,11 @@
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="bi bi-box-arrow-in-right"></i> Se connecter
                 </button>
+                <div class="mt-3 text-center">
+    <a href="<%= request.getContextPath() %>/register" class="text-decoration-none">
+        Créer un nouveau compte
+    </a>
+</div>
             </form>
         </div>
     </div>

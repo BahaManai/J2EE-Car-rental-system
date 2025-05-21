@@ -218,4 +218,20 @@ public class ImpDaoClient implements IDaoClient {
         }
         return null;
     }
+    
+    public Client findByEmail(String email) {
+        String sql = "SELECT * FROM client WHERE email = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Client c = new Client();
+                c.setEmail(rs.getString("email"));
+                return c;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
