@@ -13,29 +13,7 @@ import utilitaire.SingletonConnexion;
 public class ImpDaoClient implements IDaoClient {
     private Connection con = SingletonConnexion.getConnection();
 
-    @Override
-    public void ajouterClient(Client client) {
-        String sql = "INSERT INTO client (code_client, CIN, nom, prenom, adresse, email, tel, age, mot_de_passe, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, client.getCodeClient());
-            ps.setString(2, client.getCIN());
-            ps.setString(3, client.getNom());
-            ps.setString(4, client.getPrenom());
-            ps.setString(5, client.getAdresse());
-            ps.setString(6, client.getEmail());
-            ps.setString(7, client.getTel());
-            ps.setInt(8, client.getAge());
-            ps.setString(9, client.getMotDePasse());
-            ps.setString(10, "client");
-
-            ps.executeUpdate();
-            System.out.println("Client ajouté avec succès.");
-        } catch (SQLException e) {
-            System.err.println("Error adding client: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+   
 
     @Override
     public void modifierClient(Client client) {
@@ -219,14 +197,48 @@ public class ImpDaoClient implements IDaoClient {
         return null;
     }
     
+    @Override
+    public void ajouterClient(Client client) {
+        String sql = "INSERT INTO client (code_client, CIN, nom, prenom, adresse, email, tel, age, mot_de_passe, salt, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, client.getCodeClient());
+            ps.setString(2, client.getCIN());
+            ps.setString(3, client.getNom());
+            ps.setString(4, client.getPrenom());
+            ps.setString(5, client.getAdresse());
+            ps.setString(6, client.getEmail());
+            ps.setString(7, client.getTel());
+            ps.setInt(8, client.getAge());
+            ps.setString(9, client.getMotDePasse());
+            ps.setString(10, client.getSalt());
+            ps.setString(11, "client");
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            // handle exception
+        }
+    }
+
+    // Update findByEmailAndPassword to findByEmail only
     public Client findByEmail(String email) {
-        String sql = "SELECT * FROM client WHERE email = ?";
+        String sql = "SELECT code_client, CIN, nom, prenom, adresse, email, tel, age, mot_de_passe, salt, role FROM client WHERE email = ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 Client c = new Client();
+                c.setCodeClient(rs.getInt("code_client"));
+                c.setCIN(rs.getString("CIN"));
+                c.setNom(rs.getString("nom"));
+                c.setPrenom(rs.getString("prenom"));
+                c.setAdresse(rs.getString("adresse"));
                 c.setEmail(rs.getString("email"));
+                c.setTel(rs.getString("tel"));
+                c.setAge(rs.getInt("age"));
+                c.setMotDePasse(rs.getString("mot_de_passe"));
+                c.setSalt(rs.getString("salt"));
+                c.setRole(rs.getString("role"));
                 return c;
             }
         } catch (SQLException e) {

@@ -11,7 +11,11 @@ public class Client {
     private int age;
     private String motDePasse;
     private String role;
+ private String salt;
     
+    // ... getters and setters ...
+    public String getSalt() { return salt; }
+    public void setSalt(String salt) { this.salt = salt; }
     public Client() {}
 	public Client(int codeClient, String cIN, String nom, String prenom, String adresse, String email, String tel,
 			int age) {

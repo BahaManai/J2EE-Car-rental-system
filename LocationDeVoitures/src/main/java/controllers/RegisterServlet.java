@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import utilitaire.PasswordUtil;
 import entities.Client;
 import dao.IDaoClient;
 import dao.ImpDaoClient;
@@ -35,15 +36,13 @@ public class RegisterServlet extends HttpServlet {
         int age = Integer.parseInt(request.getParameter("age"));
         String motDePasse = request.getParameter("motDePasse");
 
-        // 2. Check if email already exists (you might want to add this method to IDaoClient)
-        Client existingClient = clientDao.findByEmailAndPassword(email, motDePasse);
-        if (existingClient != null) {
-            request.setAttribute("error", "Email déjà utilisé");
-            request.getRequestDispatcher("/register.jsp").forward(request, response);
-            return;
-        }
+        
 
-        // 3. Create new client
+        // 3. Hash the password
+        String salt = PasswordUtil.generateSalt();
+        String hashedPassword = PasswordUtil.hashPassword(motDePasse, salt);
+
+        // 4. Create new client
         Client newClient = new Client();
         newClient.setCIN(cin);
         newClient.setNom(nom);
@@ -52,10 +51,11 @@ public class RegisterServlet extends HttpServlet {
         newClient.setEmail(email);
         newClient.setTel(tel);
         newClient.setAge(age);
-        newClient.setMotDePasse(motDePasse); // Note: In production, hash this password!
-        newClient.setRole("client"); // Default role
+        newClient.setMotDePasse(hashedPassword);
+        newClient.setSalt(salt); // Add this field to your Client entity
+        newClient.setRole("client");
 
-        // 4. Save to database
+        // 5. Save to database
         clientDao.ajouterClient(newClient);
 
         // 5. Auto-login (optional)

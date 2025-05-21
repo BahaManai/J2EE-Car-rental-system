@@ -10,4 +10,5 @@ public interface IDaoClient
 	public List<Client> listeClients();
 	Client getClientById(int codeClient);
 	Client findByEmailAndPassword(String email, String motDePasse);
+	Client findByEmail(String email);
 }
