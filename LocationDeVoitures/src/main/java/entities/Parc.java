@@ -9,6 +9,7 @@ import java.util.List;
 public class Parc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "code_parc")
     private int codeParc;
 
     @Column(name = "nom_parc", nullable = false)
@@ -20,7 +21,7 @@ public class Parc {
     @Column
     private int capacite;
 
-    @Column(name = "nb_voitures")
+    @Transient
     private int nbVoitures;
 
     @OneToMany(mappedBy = "parc", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

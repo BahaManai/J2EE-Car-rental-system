@@ -224,18 +224,17 @@ public class ServletClient extends HttpServlet {
         int clientCount = modelClient.countClients();
         int locationCount = modelLocation.countLocations();
         int activeLocations = modelLocation.countActiveLocations();
-        double totalRevenue = modelLocation.calculateTotalRevenue(); // Nouvelle méthode à créer
+        double totalRevenue = modelLocation.calculateTotalRevenue(); 
         int voitureCount = modelVoiture.countVoitures();
-        double occupancyRate = modelVoiture.calculateOccupancyRate(); // Nouvelle méthode à créer (en %)
+        double occupancyRate = modelVoiture.calculateOccupancyRate(); 
 
         // Données pour les graphiques
-        List<String> parcNames = modelParc.getParcNames(); // Nouvelle méthode à créer
-        List<Double> revenuePerParc = modelLocation.getRevenuePerParc(); // Nouvelle méthode à créer
-        List<String> carTypeLabels = modelVoiture.getCarTypeLabels(); // Nouvelle méthode à créer
-        List<Long> carTypeData = modelVoiture.getCarTypeCounts(); // Nouvelle méthode à créer
-        List<String> revenueMonths = modelLocation.getRevenueMonths(); // Nouvelle méthode à créer
-        List<Double> revenueEvolutionData = modelLocation.getMonthlyRevenue(); // Nouvelle méthode à créer
-
+        List<String> parcNames = modelParc.getParcNames(); 
+        List<Double> revenuePerParc = modelLocation.getRevenuePerParc(); 
+        List<String> carTypeLabels = modelVoiture.getCarTypeLabels(); 
+        List<Long> carTypeData = modelVoiture.getCarTypeCounts(); 
+        List<String> revenueMonths = modelLocation.getRevenueMonths(); 
+        List<Double> revenueEvolutionData = modelLocation.getMonthlyRevenue(); 
         // Définir les attributs de la requête
         request.setAttribute("clientCount", clientCount);
         request.setAttribute("activeLocations", activeLocations);

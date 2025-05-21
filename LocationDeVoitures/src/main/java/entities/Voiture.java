@@ -7,7 +7,8 @@ import jakarta.persistence.*;
 public class Voiture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int codevoiture;
+    @Column(name = "code_voiture")
+    private int codeVoiture;
 
     @Column(nullable = false)
     private String matricule;
@@ -31,7 +32,7 @@ public class Voiture {
     public Voiture() {}
 
     public Voiture(int codevoiture, String matricule, String model, float kilometrage, float prixParJour, String image, Parc parc) {
-        this.codevoiture = codevoiture;
+        this.codeVoiture = codevoiture;
         this.matricule = matricule;
         this.model = model;
         this.kilometrage = kilometrage;
@@ -41,11 +42,11 @@ public class Voiture {
     }
 
     public int getCodeVoiture() {
-        return codevoiture;
+        return codeVoiture;
     }
 
     public void setCodeVoiture(int codeVoiture) {
-        this.codevoiture = codeVoiture;
+        this.codeVoiture = codeVoiture;
     }
 
     public String getMatricule() {

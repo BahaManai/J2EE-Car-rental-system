@@ -97,7 +97,7 @@ Client client = (Client) request.getAttribute("client");
             <h1 class="h3 text-primary">
                 <i class="bi bi-people-fill"></i> Gestion des Clients
             </h1>
-            rozpoczą    <div class="action-buttons">
+                <div class="action-buttons">
                 <a href="/LocationDeVoitures/admin/listeClients" class="btn btn-primary">
                     <i class="bi bi-list-ul"></i> Liste des clients
                 </a>

@@ -53,12 +53,17 @@ public class ImpDaoParc implements IDaoParc {
     public ArrayList<Parc> listeParcs() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<Parc> parcs = session.createQuery("from Parc", Parc.class).list();
+            for (Parc p : parcs) {
+                int nb = countVoituresByParc(p.getCodeParc());
+                p.setNbVoitures(nb);
+            }
             return new ArrayList<>(parcs);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return new ArrayList<>();
     }
+
 
     @Override
     public Parc getParcById(int codeParc) {
@@ -88,4 +93,18 @@ public class ImpDaoParc implements IDaoParc {
         }
         return 0;
     }
+    
+    public int countVoituresByParc(int codeParc) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Long count = session.createQuery(
+                "select count(v) from Voiture v where v.parc.codeParc = :codeParc", Long.class)
+                .setParameter("codeParc", codeParc)
+                .uniqueResult();
+            return count != null ? count.intValue() : 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 }

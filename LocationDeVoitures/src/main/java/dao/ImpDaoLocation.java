@@ -15,17 +15,39 @@ import java.util.List;
 
 public class ImpDaoLocation implements IDaoLocation {
 
-    @Override
-    public void ajouterLocation(Location l) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
-            session.persist(l);
-            tx.commit();
-            System.out.println("Location ajoutée avec succès.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public void ajouterLocation(Location l) {
+	    Transaction tx = null;
+	    Session session = null;
+
+	    try {
+	        session = HibernateUtil.getSessionFactory().openSession();
+	        tx = session.beginTransaction();
+
+	        // Réattacher les entités
+	        Client client = session.get(Client.class, l.getClient().getCodeClient());
+	        Voiture voiture = session.get(Voiture.class, l.getVoiture().getCodeVoiture());
+
+	        l.setClient(client);
+	        l.setVoiture(voiture);
+
+	        session.merge(l);
+	        tx.commit();
+	    } catch (Exception e) {
+	        if (tx != null && session != null && session.isOpen()) {
+	            try {
+	                tx.rollback();
+	            } catch (Exception rollbackEx) {
+	                System.err.println("Échec du rollback : " + rollbackEx.getMessage());
+	            }
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        if (session != null && session.isOpen()) {
+	            session.close();
+	        }
+	    }
+	}
 
     @Override
     public void supprimerLocation(int code) {
@@ -71,20 +93,24 @@ public class ImpDaoLocation implements IDaoLocation {
     }
 
     @Override
-    public ArrayList<Location> listeLocations() {
+    public List<Location> listeLocations() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Location> query = session.createQuery("from Location", Location.class);
-            return new ArrayList<>(query.list());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            return session.createQuery("""
+                SELECT l FROM Location l
+                JOIN FETCH l.client
+                JOIN FETCH l.voiture
+            """, Location.class).getResultList();
         }
     }
 
     @Override
     public ArrayList<Location> getLocationsByClientId(int clientId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Location> query = session.createQuery("from Location where client.codeClient = :clientId", Location.class);
+        	Query<Location> query = session.createQuery("""
+        		    SELECT l FROM Location l
+        		    JOIN FETCH l.voiture
+        		    WHERE l.client.codeClient = :clientId
+        		""", Location.class);
             query.setParameter("clientId", clientId);
             return new ArrayList<>(query.list());
         } catch (Exception e) {
@@ -135,16 +161,24 @@ public class ImpDaoLocation implements IDaoLocation {
     @Override
     public double calculateTotalRevenue() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Double> query = session.createQuery(
-                "select sum(v.prixParJour * (cast(l.dateFin as long) - cast(l.dateDeb as long)) / 86400000) " +
-                "from Location l join l.voiture v where l.statut = 'accepté'", Double.class);
-            Double result = query.uniqueResult();
-            return result != null ? result : 0.0;
+            Query<Location> query = session.createQuery(
+                "FROM Location l WHERE l.statut = 'accepté'", Location.class);
+            List<Location> locations = query.list();
+
+            double total = 0.0;
+            for (Location l : locations) {
+                if (l.getDateDeb() != null && l.getDateFin() != null && l.getVoiture() != null) {
+                    long days = (l.getDateFin().getTime() - l.getDateDeb().getTime()) / (1000 * 60 * 60 * 24);
+                    total += l.getVoiture().getPrixParJour() * days;
+                }
+            }
+            return total;
         } catch (Exception e) {
             e.printStackTrace();
             return 0.0;
         }
     }
+
     @Override
     public List<Double> getRevenuePerParc() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -161,42 +195,56 @@ public class ImpDaoLocation implements IDaoLocation {
     public List<Double> getMonthlyRevenue() {
         List<Double> revenues = new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query<Object[]> query = session.createQuery(
-                "select year(l.dateDeb), month(l.dateDeb), " +
-                "sum(v.prixParJour * (cast(l.dateFin as long) - cast(l.dateDeb as long)) / 86400000) " +
-                "from Location l join l.voiture v where l.statut = 'accepté' and l.dateDeb >= :sixMonthsAgo " +
-                "group by year(l.dateDeb), month(l.dateDeb) order by year(l.dateDeb), month(l.dateDeb)", Object[].class);
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.MONTH, -6);
-            query.setParameter("sixMonthsAgo", cal.getTime());
-            
-            // Initialize 6 months with 0.0
-            for (int i = 0; i < 6; i++) {
+            cal.add(Calendar.MONTH, -5); // On veut les 6 derniers mois (inclut mois courant)
+            cal.set(Calendar.DAY_OF_MONTH, 1); // Début du mois
+
+            Query<Object[]> query = session.createNativeQuery("""
+                SELECT 
+                    YEAR(l.date_debut) as yr,
+                    MONTH(l.date_debut) as mn,
+                    SUM(v.prix_par_jour * DATEDIFF(l.date_fin, l.date_debut)) as revenue
+                FROM location l
+                JOIN voiture v ON l.code_voiture = v.code_voiture
+                WHERE l.statut = 'accepté' AND l.date_debut >= :startDate
+                GROUP BY YEAR(l.date_debut), MONTH(l.date_debut)
+                ORDER BY yr, mn
+            """);
+            query.setParameter("startDate", cal.getTime());
+
+            // Initialise les 6 derniers mois avec 0
+            Calendar now = Calendar.getInstance();
+            for (int i = 5; i >= 0; i--) {
+                Calendar m = (Calendar) now.clone();
+                m.add(Calendar.MONTH, -i);
                 revenues.add(0.0);
             }
-            
-            // Fill with data
+
+            // Injecte les revenus dans les bons mois
             List<Object[]> results = query.list();
             for (Object[] row : results) {
-                int year = (Integer) row[0];
-                int month = (Integer) row[1];
-                Double revenue = (Double) row[2];
-                
-                // Calculate months between current date and result date
+                int year = ((Number) row[0]).intValue();
+                int month = ((Number) row[1]).intValue();
+                double revenue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+
                 Calendar dataCal = Calendar.getInstance();
                 dataCal.set(year, month - 1, 1);
-                long monthsBetween = ((cal.get(Calendar.YEAR) - dataCal.get(Calendar.YEAR)) * 12 +
-                                    (cal.get(Calendar.MONTH) - dataCal.get(Calendar.MONTH))) * -1;
-                if (monthsBetween >= 0 && monthsBetween < 6) {
-                    revenues.set((int) monthsBetween, revenue != null ? revenue : 0.0);
+
+                int index = (dataCal.get(Calendar.YEAR) - now.get(Calendar.YEAR)) * 12 +
+                            (dataCal.get(Calendar.MONTH) - now.get(Calendar.MONTH)) + 5;
+
+                if (index >= 0 && index < 6) {
+                    revenues.set(index, revenue);
                 }
             }
+
             return revenues;
         } catch (Exception e) {
             e.printStackTrace();
             return revenues;
         }
     }
+
     @Override
     public int countLocations() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -218,4 +266,24 @@ public class ImpDaoLocation implements IDaoLocation {
             return 0;
         }
     }
+    
+    public List<String> getRevenueMonths() {
+        List<String> months = new ArrayList<>();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<String> query = session.createQuery(
+                "select function('MONTHNAME', l.dateDeb) " +
+                "from Location l where l.statut = 'accepté' and l.dateDeb >= :sixMonthsAgo " +
+                "group by function('MONTHNAME', l.dateDeb), function('MONTH', l.dateDeb) " +
+                "order by function('YEAR', l.dateDeb), function('MONTH', l.dateDeb)", String.class);
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MONTH, -6);
+            query.setParameter("sixMonthsAgo", cal.getTime());
+
+            months = query.list();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return months;
+    }
+
 }
