@@ -9,4 +9,8 @@ public interface IDaoVoiture {
     void supprimerVoiture(int codeVoiture);
     List<Voiture> listeVoitures();
     Voiture getVoitureById(int codeVoiture);
+    int countVoitures();
+    double calculateOccupancyRate();
+    List<String> getCarTypeLabels();
+    List<Long> getCarTypeCounts();
 }

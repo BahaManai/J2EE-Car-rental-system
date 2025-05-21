@@ -1,17 +1,18 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Calendar;
-import java.text.SimpleDateFormat;
-
+import dao.IDaoLocation;
 import dao.ImpDaoLocation;
 import entities.Location;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 public class ModelLocation {
     private Location location;
-    private ImpDaoLocation daoLocation;
+    private IDaoLocation daoLocation;
 
     public ModelLocation() {
         this.daoLocation = new ImpDaoLocation();
@@ -38,7 +39,7 @@ public class ModelLocation {
     }
 
     public void updateLocationStatus(int codeLocation, String statut) {
-        if (codeLocation > 0 && statut != null && 
+        if (codeLocation > 0 && statut != null &&
             (statut.equals("en attente") || statut.equals("accepté") || statut.equals("refusé"))) {
             daoLocation.updateLocationStatus(codeLocation, statut);
         } else {
@@ -54,16 +55,16 @@ public class ModelLocation {
         }
     }
 
-    public ArrayList<Location> listeLocations() {
+    public List<Location> listeLocations() {
         return daoLocation.listeLocations();
     }
 
-    public ArrayList<Location> getLocationsByClientId(int clientId) {
+    public List<Location> getLocationsByClientId(int clientId) {
         return daoLocation.getLocationsByClientId(clientId);
     }
 
-    public ArrayList<Location> getLocationsByStatus(String statut) {
-        if (statut != null && 
+    public List<Location> getLocationsByStatus(String statut) {
+        if (statut != null &&
             (statut.equals("en attente") || statut.equals("accepté") || statut.equals("refusé"))) {
             return daoLocation.getLocationsByStatus(statut);
         }
@@ -79,23 +80,22 @@ public class ModelLocation {
     }
 
     public int countLocations() {
-        return daoLocation.countLocations(); // Utiliser une requête SQL directe
+        return daoLocation.countLocations();
     }
 
     public int countActiveLocations() {
-        return daoLocation.countActiveLocations(); // Utiliser une requête SQL directe
+        return daoLocation.countActiveLocations();
     }
 
     public double calculateTotalRevenue() {
-        return daoLocation.calculateTotalRevenue(); // Somme des prix des locations acceptées
+        return daoLocation.calculateTotalRevenue();
     }
 
     public List<Double> getRevenuePerParc() {
-        return daoLocation.getRevenuePerParc(); // Revenus par parc
+        return daoLocation.getRevenuePerParc();
     }
 
     public List<String> getRevenueMonths() {
-        // Retourner les 6 derniers mois
         List<String> months = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy");
         Calendar cal = Calendar.getInstance();
@@ -108,6 +108,6 @@ public class ModelLocation {
     }
 
     public List<Double> getMonthlyRevenue() {
-        return daoLocation.getMonthlyRevenue(); // Revenus par mois
+        return daoLocation.getMonthlyRevenue();
     }
 }

@@ -14,4 +14,9 @@ public interface IDaoLocation {
     List<Location> getLocationsByStatus(String statut);
     Location getLocationById(int id);
     boolean estVoitureDisponible(int codeVoiture, Date debut, Date fin);
+    int countLocations();
+    int countActiveLocations();
+    double calculateTotalRevenue();
+    List<Double> getRevenuePerParc();
+    List<Double> getMonthlyRevenue();
 }

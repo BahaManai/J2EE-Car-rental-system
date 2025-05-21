@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import dao.ImpDaoVoiture;
 import entities.Voiture;
 
@@ -41,7 +42,7 @@ public class ModelVoiture {
         }
     }
 
-    public ArrayList<Voiture> listeVoitures() {
+    public List<Voiture> listeVoitures() {
         return daoVoiture.listeVoitures();
     }
 
@@ -50,18 +51,18 @@ public class ModelVoiture {
     }
 
     public int countVoitures() {
-        return daoVoiture.countVoitures(); // Utiliser une requête SQL directe
+        return daoVoiture.countVoitures(); // Nombre total de voitures
     }
 
     public double calculateOccupancyRate() {
-        return daoVoiture.calculateOccupancyRate(); // Taux d'occupation des voitures
+        return daoVoiture.calculateOccupancyRate(); // Taux d'occupation
     }
 
     public List<String> getCarTypeLabels() {
-        return daoVoiture.getCarTypeLabels(); // Catégories de voitures
+        return daoVoiture.getCarTypeLabels(); // Libellés de modèles
     }
 
-    public List<Integer> getCarTypeCounts() {
-        return daoVoiture.getCarTypeCounts(); // Nombre de voitures par catégorie
+    public List<Long> getCarTypeCounts() {
+        return daoVoiture.getCarTypeCounts(); // Nombre de voitures par modèle
     }
 }

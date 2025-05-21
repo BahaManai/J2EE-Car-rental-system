@@ -232,7 +232,7 @@ public class ServletClient extends HttpServlet {
         List<String> parcNames = modelParc.getParcNames(); // Nouvelle méthode à créer
         List<Double> revenuePerParc = modelLocation.getRevenuePerParc(); // Nouvelle méthode à créer
         List<String> carTypeLabels = modelVoiture.getCarTypeLabels(); // Nouvelle méthode à créer
-        List<Integer> carTypeData = modelVoiture.getCarTypeCounts(); // Nouvelle méthode à créer
+        List<Long> carTypeData = modelVoiture.getCarTypeCounts(); // Nouvelle méthode à créer
         List<String> revenueMonths = modelLocation.getRevenueMonths(); // Nouvelle méthode à créer
         List<Double> revenueEvolutionData = modelLocation.getMonthlyRevenue(); // Nouvelle méthode à créer
 

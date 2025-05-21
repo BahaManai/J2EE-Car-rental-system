@@ -3,12 +3,13 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import dao.IDaoClient;
 import dao.ImpDaoClient;
 import entities.Client;
 
 public class ModelClient {
     private Client clt;
-    private ImpDaoClient daoClient;
+    private IDaoClient daoClient;
 
     public ModelClient() {
         this.daoClient = new ImpDaoClient();
@@ -41,25 +42,16 @@ public class ModelClient {
             System.err.println("Code client invalide.");
         }
     }
-    
+
     public ArrayList<Client> listeClients() {
-    	 return daoClient.listeClients();
+        return new ArrayList<>(daoClient.listeClients());
     }
-    
+
     public Client getClientById(int codeClient) {
         return daoClient.getClientById(codeClient);
     }
-    
-    public Client rechercherParCIN(String cin) {
-        return daoClient.findByNCIN(cin);
-    }
 
-    public List<Client> rechercherParNom(String nom) {
-        return daoClient.findByNom(nom);
-    }
-    
     public int countClients() {
-        return listeClients().size(); 
+        return listeClients().size();
     }
-
 }
